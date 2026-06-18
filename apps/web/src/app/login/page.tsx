@@ -14,8 +14,8 @@ import { toast } from 'sonner';
 export default function LoginPage() {
   const router = useRouter();
   const { setAuth } = useAuthStore();
-  const [email, setEmail] = useState('student@demo.com');
-  const [password, setPassword] = useState('Demo@123');
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
   const [showPassword, setShowPassword] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
 
@@ -90,7 +90,7 @@ export default function LoginPage() {
                       value={email}
                       onChange={(e) => setEmail(e.target.value)}
                       className="pl-10"
-                      placeholder="student@demo.com"
+                      placeholder="you@college.edu"
                       required
                     />
                   </div>
@@ -120,12 +120,6 @@ export default function LoginPage() {
                   {isLoading ? 'Signing in...' : 'Sign In'}
                 </Button>
               </form>
-
-              <div className="mt-6 p-4 rounded-lg bg-secondary/50 text-sm space-y-1">
-                <p className="font-medium text-muted-foreground">Demo Credentials:</p>
-                <p>Student: student@demo.com / Demo@123</p>
-                <p>Admin: admin@constel.ai / Demo@123</p>
-              </div>
             </CardContent>
           </Card>
         </motion.div>

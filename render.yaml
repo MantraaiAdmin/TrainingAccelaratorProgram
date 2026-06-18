@@ -1,0 +1,35 @@
+services:
+  - type: web
+    name: mantra-learn-api
+    runtime: docker
+    dockerfilePath: ./infra/docker/Dockerfile.api
+    dockerContext: .
+    plan: free
+    healthCheckPath: /api/docs
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: API_PORT
+        value: 4000
+      - key: DATABASE_URL
+        fromDatabase:
+          name: mantra-learn-db
+          property: connectionString
+      - key: JWT_SECRET
+        generateValue: true
+      - key: JWT_REFRESH_SECRET
+        generateValue: true
+      - key: CORS_ORIGIN
+        value: https://learn-mantra-ai.vercel.app
+      - key: USE_DOCKER_SANDBOX
+        value: 'false'
+      - key: AI_PROVIDER
+        value: qwen
+      - key: QWEN_API_KEY
+        sync: false
+
+databases:
+  - name: mantra-learn-db
+    plan: free
+    databaseName: constel_nextgen
+    user: constel

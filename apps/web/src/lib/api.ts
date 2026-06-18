@@ -1,4 +1,11 @@
-const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:4000';
+function getApiBaseUrl(): string {
+  const configured = process.env.NEXT_PUBLIC_API_URL?.replace(/\/$/, '');
+  if (configured) return configured;
+  if (typeof window !== 'undefined') return '';
+  return (process.env.API_URL || 'http://localhost:4000').replace(/\/$/, '');
+}
+
+const API_URL = getApiBaseUrl();
 
 interface FetchOptions extends RequestInit {
   token?: string;

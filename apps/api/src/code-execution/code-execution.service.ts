@@ -33,7 +33,7 @@ export interface ExecutionResult {
 @Injectable()
 export class CodeExecutionService {
   private timeout = parseInt(process.env.CODE_EXECUTION_TIMEOUT || '10000', 10);
-  private useDocker = process.env.NODE_ENV === 'production' || process.env.USE_DOCKER_SANDBOX === 'true';
+  private useDocker = process.env.USE_DOCKER_SANDBOX === 'true';
 
   async runCode(code: string, input?: string): Promise<ExecutionResult> {
     const start = Date.now();
