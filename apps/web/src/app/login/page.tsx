@@ -19,6 +19,10 @@ export default function LoginPage() {
   const [showPassword, setShowPassword] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
 
+  const clearAutofill = (event: React.FocusEvent<HTMLInputElement>) => {
+    event.target.removeAttribute('readonly');
+  };
+
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsLoading(true);
@@ -80,31 +84,52 @@ export default function LoginPage() {
               <CardDescription>Sign in to continue your learning journey</CardDescription>
             </CardHeader>
             <CardContent>
-              <form onSubmit={handleLogin} className="space-y-4">
+              <form onSubmit={handleLogin} className="space-y-4" autoComplete="off">
                 <div className="space-y-2">
-                  <label className="text-sm font-medium">Email</label>
+                  <label className="text-sm font-medium" htmlFor="login-email">
+                    Email
+                  </label>
                   <div className="relative">
                     <Mail className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
                     <Input
+                      id="login-email"
+                      name="login-email"
                       type="email"
                       value={email}
                       onChange={(e) => setEmail(e.target.value)}
+                      onFocus={clearAutofill}
+                      readOnly
                       className="pl-10"
                       placeholder="you@college.edu"
+                      autoComplete="off"
+                      autoCorrect="off"
+                      autoCapitalize="none"
+                      spellCheck={false}
+                      data-1p-ignore
+                      data-lpignore="true"
                       required
                     />
                   </div>
                 </div>
                 <div className="space-y-2">
-                  <label className="text-sm font-medium">Password</label>
+                  <label className="text-sm font-medium" htmlFor="login-password">
+                    Password
+                  </label>
                   <div className="relative">
                     <Lock className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
                     <Input
+                      id="login-password"
+                      name="login-password"
                       type={showPassword ? 'text' : 'password'}
                       value={password}
                       onChange={(e) => setPassword(e.target.value)}
+                      onFocus={clearAutofill}
+                      readOnly
                       className="pl-10 pr-10"
-                      placeholder="••••••••"
+                      placeholder="Enter your password"
+                      autoComplete="new-password"
+                      data-1p-ignore
+                      data-lpignore="true"
                       required
                     />
                     <button

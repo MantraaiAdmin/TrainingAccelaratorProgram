@@ -45,3 +45,4 @@ storage/
 
 # Docker
 *.pid
+.vercel

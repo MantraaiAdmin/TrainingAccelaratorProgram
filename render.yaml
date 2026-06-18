@@ -20,7 +20,7 @@ services:
       - key: JWT_REFRESH_SECRET
         generateValue: true
       - key: CORS_ORIGIN
-        value: https://learn-mantra-ai.vercel.app
+        value: https://learn.mantra.ai,https://learn-mantra-ai.vercel.app
       - key: USE_DOCKER_SANDBOX
         value: 'false'
       - key: AI_PROVIDER
