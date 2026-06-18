@@ -20,10 +20,10 @@ export class QuizzesController {
   @ApiOperation({ summary: 'Submit quiz answers' })
   submit(
     @Param('quizId') quizId: string,
-    @Body() body: { answers: Record<string, string> },
+    @Body() body: { answers?: Record<string, string> },
     @Request() req: { user: { id: string } },
   ) {
-    return this.quizzesService.submitQuiz(req.user.id, quizId, body.answers);
+    return this.quizzesService.submitQuiz(req.user.id, quizId, body?.answers ?? {});
   }
 
   @Get(':quizId/attempts')

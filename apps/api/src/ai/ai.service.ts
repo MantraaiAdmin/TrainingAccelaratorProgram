@@ -6,6 +6,7 @@ import {
   OpenAIProvider,
   buildLearningAssistantPrompt,
   buildMockInterviewPrompt,
+  buildOfflineLessonReply,
   getLearningScopeRefusal,
   AIMessage,
 } from '@constel/ai-sdk';
@@ -100,41 +101,60 @@ export class AiService {
 
     messages.push({ role: 'user', content: message });
 
-    const result = await this.factory.completeWithFallback(this.primaryProvider, {
-      messages,
-      temperature: 0.35,
-      maxTokens: 2048,
-    });
-
-    await this.aiUsage.logFromCompletion(
-      userId,
-      'CHAT',
-      result,
-      messages.map((m) => m.content).join('\n'),
-      result.content,
-      context,
-    );
-
-    const updatedMessages = [...messages.slice(1), { role: 'assistant' as const, content: result.content }];
-
-    if (chatId) {
-      await this.prisma.aIChat.update({
-        where: { id: chatId },
-        data: { messages: updatedMessages as unknown as Prisma.InputJsonValue, updatedAt: new Date() },
+    try {
+      const result = await this.factory.completeWithFallback(this.primaryProvider, {
+        messages,
+        temperature: 0.35,
+        maxTokens: 2048,
       });
-    } else {
-      const chat = await this.prisma.aIChat.create({
-        data: {
-          userId,
-          title: message.slice(0, 50),
-          context: (context || {}) as Prisma.InputJsonValue,
-          messages: updatedMessages as unknown as Prisma.InputJsonValue,
-        },
+
+      await this.aiUsage.logFromCompletion(
+        userId,
+        'CHAT',
+        result,
+        messages.map((m) => m.content).join('\n'),
+        result.content,
+        context,
+      );
+
+      const updatedMessages = [...messages.slice(1), { role: 'assistant' as const, content: result.content }];
+
+      if (chatId) {
+        await this.prisma.aIChat.update({
+          where: { id: chatId },
+          data: { messages: updatedMessages as unknown as Prisma.InputJsonValue, updatedAt: new Date() },
+        });
+      } else {
+        const chat = await this.prisma.aIChat.create({
+          data: {
+            userId,
+            title: message.slice(0, 50),
+            context: (context || {}) as Prisma.InputJsonValue,
+            messages: updatedMessages as unknown as Prisma.InputJsonValue,
+          },
+        });
+        return { chatId: chat.id, ...result };
+      }
+
+      return { chatId, ...result };
+    } catch (err) {
+      console.error('AI chat provider failed:', err);
+      const fallbackContent = buildOfflineLessonReply(message, ctx);
+      await this.aiUsage.log({
+        userId,
+        usageType: 'CHAT',
+        model: 'offline-fallback',
+        promptTokens: estimateTokenCount(message),
+        completionTokens: estimateTokenCount(fallbackContent),
+        context,
       });
-      return { chatId: chat.id, ...result };
+      return {
+        chatId,
+        content: fallbackContent,
+        provider: this.primaryProvider,
+        model: 'offline-fallback',
+      };
     }
-
-    return { chatId, ...result };
   }
 
   async *streamChat(
@@ -265,7 +285,11 @@ export class AiService {
     const exercise = await this.prisma.codingExercise.findUnique({ where: { id: exerciseId } });
     if (!exercise) throw new Error('Exercise not found');
 
-    const hintIndex = Math.min(exercise.hints.length - 1, Math.floor(exercise.hints.length / 2));
+    const hintIndex = Math.min(Math.max(exercise.hints.length - 1, 0), Math.floor(exercise.hints.length / 2));
+    const staticHint =
+      exercise.hints[hintIndex] ||
+      'Break the problem into smaller steps. Compare your output to the sample input/output in the lab.';
+
     const messages: AIMessage[] = [
       {
         role: 'system',
@@ -277,19 +301,38 @@ export class AiService {
       },
     ];
 
-    const result = await this.factory.completeWithFallback(this.primaryProvider, { messages, maxTokens: 512 });
+    try {
+      const result = await this.factory.completeWithFallback(this.primaryProvider, { messages, maxTokens: 512 });
 
-    if (userId) {
-      await this.aiUsage.logFromCompletion(
-        userId,
-        'HINT',
-        result,
-        messages.map((m) => m.content).join('\n'),
-        result.content,
-      );
+      if (userId) {
+        await this.aiUsage.logFromCompletion(
+          userId,
+          'HINT',
+          result,
+          messages.map((m) => m.content).join('\n'),
+          result.content,
+        );
+      }
+
+      return result;
+    } catch (err) {
+      console.error('AI hint provider failed:', err);
+      const content = `**Hint:** ${staticHint}\n\n_Focus on one test case at a time. If the AI service is offline, use the lesson examples as your guide._`;
+      if (userId) {
+        await this.aiUsage.log({
+          userId,
+          usageType: 'HINT',
+          model: 'offline-fallback',
+          promptTokens: estimateTokenCount(messages.map((m) => m.content).join('\n')),
+          completionTokens: estimateTokenCount(content),
+        });
+      }
+      return {
+        content,
+        provider: this.primaryProvider,
+        model: 'offline-fallback',
+      };
     }
-
-    return result;
   }
 
   async getChats(userId: string) {

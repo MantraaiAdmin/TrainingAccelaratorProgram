@@ -239,8 +239,18 @@ export function getLearningScopeRefusal(
       normalized,
     ) ||
     /\b(stock tip|crypto tip|investment advice|get rich|motivational speech)\b/i.test(normalized) ||
-    /\b(recipe|cook|workout plan|diet plan|medical advice|doctor)\b/i.test(normalized) ||
-    /^(hi|hello|hey|how are you|what'?s up|good morning|good evening)[!.?\s]*$/i.test(normalized);
+    /\b(recipe|cook|workout plan|diet plan|medical advice|doctor)\b/i.test(normalized);
+
+  if (/^(hi|hello|hey|how are you|what'?s up|good morning|good evening)[!.?\s]*$/i.test(normalized)) {
+    const topic = context?.subsectionTitle || context?.moduleTitle || 'this lesson';
+    return (
+      `Hi! I'm your **Mantra AI Tutor** for **${topic}**.\n\n` +
+      `Ask me about concepts, code examples, or exercise hints from this lesson — for example:\n` +
+      `- "Explain **${topic}** with a simple example"\n` +
+      `- "What mistake causes this error in my code?"\n` +
+      `- "Give me a hint for this exercise (not the full answer)"`
+    );
+  }
 
   if (offTopic) {
     const topic = context?.subsectionTitle || context?.moduleTitle || 'this lesson';
@@ -294,7 +304,7 @@ export function buildLearningAssistantPrompt(context?: AIContext): string {
     prompt += `\nStudent is in **interview preparation** for this topic. Help with interview Q&A, model answers, and practice — only for this lesson's subject.\n`;
   }
   if (context?.contentType === 'LESSON') {
-    prompt += `\nStudent is reading a **lesson**. Explain concepts, clarify examples, and connect to Constel labs — stay on this lesson's syllabus.\n`;
+    prompt += `\nStudent is reading a **lesson**. Explain concepts, clarify examples, and connect to Mantra.ai labs — stay on this lesson's syllabus.\n`;
   }
 
   if (context?.studentCode) {
@@ -305,6 +315,20 @@ export function buildLearningAssistantPrompt(context?: AIContext): string {
   }
 
   return prompt;
+}
+
+/** Fallback tutor response when external AI providers are unavailable. */
+export function buildOfflineLessonReply(message: string, context?: AIContext): string {
+  const topic = context?.subsectionTitle || context?.moduleTitle || 'this lesson';
+  return (
+    `### ${topic}\n\n` +
+    `I'm temporarily unable to reach the cloud AI service, but you can keep learning:\n\n` +
+    `1. Re-read the **${topic}** lesson in the sidebar\n` +
+    `2. Run each code example in the lab environment\n` +
+    `3. Ask a **specific** follow-up (e.g. "why does this loop run 5 times?")\n\n` +
+    `**Your question:** ${message.trim()}\n\n` +
+    `_If this message persists, ask your admin to verify **QWEN_API_KEY** on the server._`
+  );
 }
 
 export function buildMockInterviewPrompt(type: 'technical' | 'hr' | 'coding'): string {

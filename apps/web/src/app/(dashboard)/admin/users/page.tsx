@@ -238,7 +238,7 @@ export default function AdminUsersPage() {
             <Field label="Email" className="md:col-span-2">
               <input
                 type="email"
-                placeholder="admin@constel.ai"
+                placeholder="admin@mantra.ai"
                 value={form.email}
                 onChange={(e) => setForm({ ...form, email: e.target.value })}
                 className={inputClass}

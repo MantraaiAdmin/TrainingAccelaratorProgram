@@ -7,6 +7,7 @@ import { Button } from '@/components/ui/button';
 import { Award, Download } from 'lucide-react';
 import { toast } from 'sonner';
 import { BRAND } from '@/lib/branding';
+import { downloadCertificateHtml } from '@/lib/certificate-download';
 
 export default function CertificatesPage() {
   const { data: certificates, isLoading, refetch } = useQuery({
@@ -55,7 +56,20 @@ export default function CertificatesPage() {
                 {cert.qrCodeData && (
                   <img src={cert.qrCodeData} alt="QR Code" className="w-24 h-24 mx-auto" />
                 )}
-                <Button variant="outline" className="w-full">
+                <Button
+                  variant="outline"
+                  className="w-full"
+                  onClick={() =>
+                    downloadCertificateHtml({
+                      certificateId: cert.certificateId,
+                      studentName: cert.studentName,
+                      trackName: cert.trackName,
+                      programName: BRAND.programName,
+                      issuedAt: cert.issuedAt,
+                      qrCodeData: cert.qrCodeData,
+                    })
+                  }
+                >
                   <Download className="w-4 h-4 mr-2" /> Download Certificate
                 </Button>
               </CardContent>

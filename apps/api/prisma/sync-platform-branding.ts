@@ -10,20 +10,28 @@ const prisma = new PrismaClient();
 async function main() {
   console.log('🎨 Syncing Mantra.ai platform branding...\n');
 
-  const welcome = await prisma.announcement.findFirst({
-    where: { title: { in: ['Welcome to Constel Nexus!', 'Welcome to Mantra.ai!'] } },
+  const welcomeRows = await prisma.announcement.findMany({
+    where: {
+      OR: [
+        { title: { contains: 'Constel', mode: 'insensitive' } },
+        { content: { contains: 'Constel', mode: 'insensitive' } },
+        { title: { in: ['Welcome to Constel Nexus!', 'Welcome to Mantra.ai!'] } },
+      ],
+    },
   });
 
-  if (welcome) {
+  for (const row of welcomeRows) {
     await prisma.announcement.update({
-      where: { id: welcome.id },
+      where: { id: row.id },
       data: {
         title: 'Welcome to Mantra.ai!',
         content:
           'Welcome to the Mantra.ai Internship Program. Start with Foundation Track: Python, Data & AI — Week 1 is now available. Pass each weekly assessment (80% minimum) to unlock the next week.',
       },
     });
-    console.log('  ✅ Welcome announcement updated');
+  }
+  if (welcomeRows.length > 0) {
+    console.log(`  ✅ Updated ${welcomeRows.length} announcement(s) to Mantra.ai branding`);
   } else {
     await prisma.announcement.create({
       data: {

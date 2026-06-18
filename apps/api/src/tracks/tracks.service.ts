@@ -61,7 +61,7 @@ export class TracksService {
                 subsections: {
                   orderBy: { order: 'asc' },
                   include: {
-                    lesson: true,
+                    lesson: { select: { id: true, duration: true, xpReward: true } },
                     exercise: { select: { id: true, title: true, difficulty: true } },
                     quiz: { select: { id: true, title: true } },
                   },

@@ -22,6 +22,18 @@ interface AuthState {
   logout: () => void;
 }
 
+const AUTH_COOKIE = 'mantra-auth';
+
+function setAuthCookie() {
+  if (typeof document === 'undefined') return;
+  document.cookie = `${AUTH_COOKIE}=1; path=/; max-age=${60 * 60 * 24 * 7}; SameSite=Lax`;
+}
+
+function clearAuthCookie() {
+  if (typeof document === 'undefined') return;
+  document.cookie = `${AUTH_COOKIE}=; path=/; max-age=0; SameSite=Lax`;
+}
+
 export const useAuthStore = create<AuthState>()(
   persist(
     (set) => ({
@@ -33,6 +45,7 @@ export const useAuthStore = create<AuthState>()(
         if (typeof window !== 'undefined') {
           localStorage.setItem('accessToken', accessToken);
           localStorage.setItem('refreshToken', refreshToken);
+          setAuthCookie();
         }
         set({ user, accessToken, refreshToken, isAuthenticated: true });
       },
@@ -40,11 +53,17 @@ export const useAuthStore = create<AuthState>()(
         if (typeof window !== 'undefined') {
           localStorage.removeItem('accessToken');
           localStorage.removeItem('refreshToken');
+          clearAuthCookie();
         }
         set({ user: null, accessToken: null, refreshToken: null, isAuthenticated: false });
       },
     }),
-    { name: 'constel-auth' },
+    {
+      name: 'constel-auth',
+      onRehydrateStorage: () => (state) => {
+        if (state?.isAuthenticated && state.accessToken) setAuthCookie();
+      },
+    },
   ),
 );
 

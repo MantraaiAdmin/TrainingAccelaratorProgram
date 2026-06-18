@@ -73,6 +73,14 @@ export class QuizzesService {
       throw new ForbiddenException(`Maximum retry attempts (${settings.maxRetries}) reached`);
     }
 
+    if (!answers || typeof answers !== 'object' || Object.keys(answers).length === 0) {
+      throw new BadRequestException('Please answer at least one question before submitting');
+    }
+
+    if (quiz.questions.length === 0) {
+      throw new BadRequestException('This assessment has no questions configured');
+    }
+
     let score = 0;
     let totalPoints = 0;
     const results: Record<string, boolean> = {};

@@ -50,6 +50,7 @@ interface DashboardData {
   }>;
   leaderboardRank: number;
   interviewReadiness: number;
+  interviewReadinessHint?: string;
   quizPassRate: number;
   recentActivity: Array<{
     id: string;
@@ -81,9 +82,10 @@ const statAccents = [
 ];
 
 export default function DashboardPage() {
-  const { data, isLoading } = useQuery({
+  const { data, isLoading, isError, refetch } = useQuery({
     queryKey: ['dashboard'],
     queryFn: () => api.getDashboard() as Promise<DashboardData>,
+    retry: 2,
   });
 
   if (isLoading) {
@@ -97,6 +99,18 @@ export default function DashboardPage() {
           <div className="lg:col-span-2 h-96 bg-secondary/40 rounded-2xl" />
           <div className="h-96 bg-secondary/40 rounded-2xl" />
         </div>
+      </div>
+    );
+  }
+
+  if (isError || !data) {
+    return (
+      <div className="rounded-2xl border border-destructive/40 bg-destructive/5 p-8 text-center space-y-4">
+        <h2 className="text-xl font-semibold">Could not load your dashboard</h2>
+        <p className="text-muted-foreground text-sm max-w-md mx-auto">
+          The server may be waking up (this can take up to 60 seconds on first load). Please wait and try again.
+        </p>
+        <Button onClick={() => refetch()}>Retry</Button>
       </div>
     );
   }
@@ -309,8 +323,9 @@ export default function DashboardPage() {
                   <span className="font-semibold">{data?.interviewReadiness ?? 0}%</span>
                 </div>
                 <ProgressBar value={data?.interviewReadiness ?? 0} />
-                <p className="text-[10px] text-muted-foreground">
-                  Based on track progress ({data?.overallProgress.percent ?? 0}%), quiz pass rate ({data?.quizPassRate ?? 0}%)
+                <p className="text-[10px] text-muted-foreground leading-relaxed">
+                  {data?.interviewReadinessHint ??
+                    'Complete lessons, pass weekly quizzes, and practice interview prep to build readiness.'}
                 </p>
               </div>
             </CardContent>

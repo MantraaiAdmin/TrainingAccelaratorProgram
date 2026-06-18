@@ -77,21 +77,27 @@ export class ProgressService {
               where: { trackId: { in: trackIds } },
               include: {
                 track: { select: { name: true, slug: true } },
+                module: { select: { id: true, order: true, title: true } },
                 submissions: { where: { userId }, take: 1, orderBy: { submittedAt: 'desc' } },
               },
-              orderBy: { deadline: 'asc' },
-              take: 8,
+              orderBy: [{ module: { order: 'asc' } }, { deadline: 'asc' }],
             })
           : Promise.resolve([]),
         this.prisma.quizAttempt.findMany({ where: { userId }, select: { passed: true, score: true } }),
         this.prisma.mockInterview.count({ where: { userId, completedAt: { not: null } } }),
       ]);
 
+    const unlockedModuleIds = await this.getUnlockedModuleIds(userId, trackIds);
+
     const pendingAssignments = pendingAssignmentRows.filter((a) => {
+      if (a.moduleId && !unlockedModuleIds.has(a.moduleId)) return false;
       const sub = a.submissions[0];
       if (!sub) return true;
       return sub.status === 'PENDING' || sub.status === 'RESUBMIT';
     });
+
+    // Show at most the current week's open assignments (avoid listing all 8+ weeks at once)
+    const currentWeekAssignments = pendingAssignments.slice(0, 2);
 
     const assignedTracks = await Promise.all(
       user.trackAssignments.map(async (a) => {
@@ -122,6 +128,12 @@ export class ProgressService {
       100,
       Math.round(overallPercent * 0.45 + quizPassRate * 0.35 + Math.min(100, mockInterviews * 20) * 0.2),
     );
+    const interviewReadinessHint =
+      interviewReadiness === 0
+        ? 'Complete lessons, pass weekly quizzes, and practice interview prep to build readiness.'
+        : interviewReadiness < 50
+          ? 'Good start — keep completing modules and mock interviews.'
+          : 'Strong progress — finish capstone and interview modules to maximize readiness.';
 
     const leaderboard = await this.gamification.getLeaderboard(100);
     const rank = leaderboard.findIndex((e) => e.userId === userId) + 1;
@@ -167,20 +179,22 @@ export class ProgressService {
         trackName: c.trackName,
         issuedAt: c.issuedAt,
       })),
-      pendingAssignments: pendingAssignments.length,
-      pendingAssignmentList: pendingAssignments.map((a) => {
+      pendingAssignments: currentWeekAssignments.length,
+      pendingAssignmentList: currentWeekAssignments.map((a) => {
         const sub = a.submissions[0];
         return {
           id: a.id,
           title: a.title,
           trackName: a.track.name,
           trackSlug: a.track.slug,
+          moduleTitle: a.module?.title,
           deadline: a.deadline,
           status: !sub ? 'not_started' : sub.status.toLowerCase(),
         };
       }),
       leaderboardRank: rank || 0,
       interviewReadiness,
+      interviewReadinessHint,
       quizPassRate,
       recentActivity: await this.enrichRecentActivity(userId),
     };
@@ -273,6 +287,51 @@ export class ProgressService {
         context,
       };
     });
+  }
+
+  /** Week 1 always unlocked; later weeks unlock after passing the previous week's quiz. */
+  private async getUnlockedModuleIds(userId: string, trackIds: string[]): Promise<Set<string>> {
+    const unlocked = new Set<string>();
+    if (!trackIds.length) return unlocked;
+
+    const modules = await this.prisma.module.findMany({
+      where: { trackId: { in: trackIds } },
+      orderBy: [{ trackId: 'asc' }, { order: 'asc' }],
+      include: {
+        chapters: {
+          where: { title: 'Weekly Assessment' },
+          include: {
+            subsections: {
+              where: { contentType: 'QUIZ' },
+              include: { quiz: { select: { id: true } } },
+            },
+          },
+        },
+      },
+    });
+
+    const byTrack = new Map<string, typeof modules>();
+    for (const mod of modules) {
+      const list = byTrack.get(mod.trackId) ?? [];
+      list.push(mod);
+      byTrack.set(mod.trackId, list);
+    }
+
+    for (const trackId of trackIds) {
+      const trackModules = byTrack.get(trackId) ?? [];
+      for (let i = 0; i < trackModules.length; i++) {
+        unlocked.add(trackModules[i].id);
+        if (i === 0) continue;
+        const prevQuizId = trackModules[i - 1].chapters.flatMap((c) => c.subsections)[0]?.quiz?.id;
+        if (!prevQuizId) continue;
+        const passed = await this.prisma.quizAttempt.findFirst({
+          where: { userId, quizId: prevQuizId, passed: true },
+        });
+        if (!passed) break;
+      }
+    }
+
+    return unlocked;
   }
 
   private defaultActivityTitle(reason: string): string {

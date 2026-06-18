@@ -1,7 +1,8 @@
 'use client';
 
-import Image from 'next/image';
 import { ReactNode, useRef } from 'react';
+import { Sparkles } from 'lucide-react';
+import { BRAND } from '@/lib/branding';
 
 const NAVY = '#0B1A3A';
 const CYAN = '#0891B2';
@@ -71,10 +72,12 @@ export function SampleCredentialFrame({
         <div className="px-8 py-8 md:px-12 md:py-10">
           <div className="flex items-center justify-between gap-4 border-b border-slate-200 pb-5 mb-6">
             <div className="flex items-center gap-3">
-              <Image src="/constel-logo.png" alt="Logo" width={56} height={56} className="rounded-lg" />
+              <div className="w-14 h-14 rounded-xl gradient-bg flex items-center justify-center shrink-0">
+                <Sparkles className="w-7 h-7 text-white" />
+              </div>
               <div>
                 <p className="text-xs font-semibold tracking-widest uppercase" style={{ color: CYAN }}>
-                  AI NextGen
+                  {BRAND.name}
                 </p>
                 <p className="text-sm font-bold" style={{ color: NAVY }}>
                   Industry Readiness Internship Program

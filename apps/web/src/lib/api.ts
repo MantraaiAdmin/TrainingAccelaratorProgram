@@ -37,20 +37,26 @@ class ApiClient {
     };
 
     let response: Response;
+    const timeoutMs = endpoint.includes('/auth/login') ? 90000 : 30000;
+    const controller = typeof AbortController !== 'undefined' ? new AbortController() : null;
+    const timeoutId = controller ? setTimeout(() => controller.abort(), timeoutMs) : null;
     try {
       response = await fetch(`${this.baseUrl}/api/v1${endpoint}`, {
         ...fetchOptions,
         headers,
+        signal: controller?.signal,
       });
     } catch (err) {
+      if (timeoutId) clearTimeout(timeoutId);
       const message = (err as Error).message || '';
-      if (message === 'Failed to fetch' || err instanceof TypeError) {
+      if (message === 'Failed to fetch' || err instanceof TypeError || message.includes('aborted')) {
         throw new Error(
           'Cannot reach the server. Wait 60 seconds and try again, or check your internet connection.',
         );
       }
       throw err;
     }
+    if (timeoutId) clearTimeout(timeoutId);
 
     if (response.status === 401 && !options.skipAuthRetry) {
       const refreshed = await this.refreshToken();
