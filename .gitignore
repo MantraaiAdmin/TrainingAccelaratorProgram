@@ -39,9 +39,10 @@ test-results/
 # Prisma
 apps/api/prisma/migrations/**/migration_lock.toml
 
-# Uploads
+# Uploads (keep apps/api/src/storage source module)
 uploads/
-storage/
+/storage/
+apps/api/uploads/
 
 # Docker
 *.pid
