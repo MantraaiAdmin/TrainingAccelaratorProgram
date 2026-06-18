@@ -1,7 +1,9 @@
 function getApiBaseUrl(): string {
-  const configured = process.env.NEXT_PUBLIC_API_URL?.replace(/\/$/, '');
-  if (configured) return configured;
+  // Use same-origin requests in the browser (Vercel rewrites proxy to Render API).
+  // Avoids CORS issues and is more reliable for production.
   if (typeof window !== 'undefined') return '';
+  const publicUrl = process.env.NEXT_PUBLIC_API_URL?.replace(/\/$/, '');
+  if (publicUrl) return publicUrl;
   return (process.env.API_URL || 'http://localhost:4000').replace(/\/$/, '');
 }
 
@@ -9,6 +11,7 @@ const API_URL = getApiBaseUrl();
 
 interface FetchOptions extends RequestInit {
   token?: string;
+  skipAuthRetry?: boolean;
 }
 
 class ApiClient {
@@ -43,13 +46,13 @@ class ApiClient {
       const message = (err as Error).message || '';
       if (message === 'Failed to fetch' || err instanceof TypeError) {
         throw new Error(
-          `Cannot reach the API at ${this.baseUrl}. Start the backend with "npm run dev" from the project root.`,
+          'Cannot reach the server. Wait 60 seconds and try again, or check your internet connection.',
         );
       }
       throw err;
     }
 
-    if (response.status === 401) {
+    if (response.status === 401 && !options.skipAuthRetry) {
       const refreshed = await this.refreshToken();
       if (refreshed) {
         return this.fetch(endpoint, options);
@@ -96,6 +99,7 @@ class ApiClient {
       method: 'POST',
       body: JSON.stringify({ email, password }),
       token: '',
+      skipAuthRetry: true,
     });
   }
 

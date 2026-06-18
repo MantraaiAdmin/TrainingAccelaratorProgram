@@ -8,25 +8,20 @@ async function bootstrap() {
   const app = await NestFactory.create(AppModule);
 
   app.use(helmet());
-  const isDev = process.env.NODE_ENV !== 'production';
   const corsOrigins = (process.env.CORS_ORIGIN || 'http://localhost:3000')
     .split(',')
     .map((origin) => origin.trim())
     .filter(Boolean);
   app.enableCors({
-    origin: isDev
-      ? (origin: string | undefined, callback: (err: Error | null, allow?: boolean) => void) => {
-          if (!origin) return callback(null, true);
-          const devOrigin =
-            /^https?:\/\/(localhost|127\.0\.0\.1|192\.168\.\d+\.\d+|10\.\d+\.\d+\.\d+)(:\d+)?$/.test(
-              origin,
-            );
-          if (devOrigin || corsOrigins.includes(origin)) return callback(null, true);
-          callback(new Error(`CORS blocked origin: ${origin}`));
-        }
-      : corsOrigins.length === 1
-        ? corsOrigins[0]
-        : corsOrigins,
+    origin: (origin: string | undefined, callback: (err: Error | null, allow?: boolean) => void) => {
+      if (!origin) return callback(null, true);
+      const devOrigin =
+        /^https?:\/\/(localhost|127\.0\.0\.1|192\.168\.\d+\.\d+|10\.\d+\.\d+\.\d+)(:\d+)?$/.test(
+          origin,
+        );
+      if (devOrigin || corsOrigins.includes(origin)) return callback(null, true);
+      callback(new Error(`CORS blocked origin: ${origin}`));
+    },
     credentials: true,
   });
 

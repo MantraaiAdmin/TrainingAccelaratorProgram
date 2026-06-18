@@ -26,6 +26,7 @@ export default function LoginPage() {
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsLoading(true);
+    toast.info('Signing in… first login may take up to 60 seconds while the server wakes up.');
     try {
       const result = await api.login(email, password);
       setAuth(result.user as never, result.accessToken, result.refreshToken);
@@ -33,7 +34,12 @@ export default function LoginPage() {
       const user = result.user as { role: string };
       router.push(user.role === 'ADMIN' || user.role === 'SUPER_ADMIN' ? '/admin' : '/dashboard');
     } catch (err) {
-      toast.error((err as Error).message || 'Login failed');
+      const message = (err as Error).message || 'Login failed';
+      if (message.toLowerCase().includes('invalid credentials')) {
+        toast.error('Invalid email or password. Ask your admin to create your student account.');
+      } else {
+        toast.error(message);
+      }
     } finally {
       setIsLoading(false);
     }
