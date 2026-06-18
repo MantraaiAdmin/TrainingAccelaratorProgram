@@ -1,0 +1,81 @@
+services:
+  postgres:
+    image: postgres:16-alpine
+    container_name: constel-postgres
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: constel
+      POSTGRES_PASSWORD: constel123
+      POSTGRES_DB: constel_nextgen
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U constel -d constel_nextgen"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+  redis:
+    image: redis:7-alpine
+    container_name: constel-redis
+    restart: unless-stopped
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis_data:/data
+
+  api:
+    build:
+      context: .
+      dockerfile: infra/docker/Dockerfile.api
+    container_name: constel-api
+    restart: unless-stopped
+    ports:
+      - "4000:4000"
+    environment:
+      DATABASE_URL: postgresql://constel:constel123@postgres:5432/constel_nextgen?schema=public
+      REDIS_URL: redis://redis:6379
+      JWT_SECRET: constel-jwt-secret-change-in-production
+      JWT_REFRESH_SECRET: constel-refresh-secret-change-in-production
+      API_PORT: 4000
+      CORS_ORIGIN: http://localhost:3000
+      QWEN_API_KEY: ${QWEN_API_KEY:-}
+      QWEN_MODEL: qwen-turbo
+      AI_PROVIDER: qwen
+      USE_DOCKER_SANDBOX: "true"
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_started
+    volumes:
+      - uploads_data:/app/uploads
+
+  web:
+    build:
+      context: .
+      dockerfile: infra/docker/Dockerfile.web
+    container_name: constel-web
+    restart: unless-stopped
+    ports:
+      - "3000:3000"
+    environment:
+      NEXT_PUBLIC_API_URL: http://localhost:4000
+      NEXT_PUBLIC_APP_NAME: Constel AI NextGen
+    depends_on:
+      - api
+
+  python-sandbox:
+    build:
+      context: infra/docker
+      dockerfile: Dockerfile.python-sandbox
+    image: constel-python-sandbox:latest
+    profiles:
+      - sandbox
+
+volumes:
+  postgres_data:
+  redis_data:
+  uploads_data:

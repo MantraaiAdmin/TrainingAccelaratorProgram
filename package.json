@@ -1,0 +1,36 @@
+{
+  "name": "constel-ai-nextgen",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Constel AI NextGen - Internship Learning & Management Platform",
+  "workspaces": [
+    "apps/*",
+    "packages/*"
+  ],
+  "scripts": {
+    "dev": "turbo run dev",
+    "build": "turbo run build",
+    "lint": "turbo run lint",
+    "test": "turbo run test",
+    "format": "prettier --write \"**/*.{ts,tsx,js,json,md}\"",
+    "db:generate": "npm run db:generate --workspace=@constel/api",
+    "db:migrate": "npm run db:migrate --workspace=@constel/api",
+    "db:seed": "npm run db:seed --workspace=@constel/api",
+    "docker:up": "docker compose up -d --build",
+    "docker:down": "docker compose down",
+    "docker:logs": "docker compose logs -f",
+    "prepare": "husky install || true"
+  },
+  "devDependencies": {
+    "@commitlint/cli": "^19.8.0",
+    "@commitlint/config-conventional": "^19.8.0",
+    "husky": "^9.1.7",
+    "prettier": "^3.5.3",
+    "turbo": "^2.5.4",
+    "typescript": "^5.8.3"
+  },
+  "engines": {
+    "node": ">=20.0.0"
+  },
+  "packageManager": "npm@10.9.2"
+}
