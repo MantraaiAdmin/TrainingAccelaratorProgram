@@ -42,11 +42,11 @@ export const PLACEHOLDER_TRACKS = [] as const;
 export const MASTER_TRACKS = [
   {
     slug: 'python-engineering-foundations',
-    name: 'Python Engineering Foundations',
+    name: 'Foundation Track: Python, Data & AI',
     category: 'FOUNDATION',
     difficulty: 'BEGINNER',
     trackLevel: 1,
-    weeks: 8,
+    weeks: 10,
   },
   {
     slug: 'full-stack-product-engineering',

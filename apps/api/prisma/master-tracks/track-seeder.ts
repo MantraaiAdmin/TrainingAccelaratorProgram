@@ -41,148 +41,148 @@ async function createQuiz(prisma: PrismaClient, subsectionId: string, quiz: Quiz
   }
 }
 
-async function seedTrackContent(prisma: PrismaClient, trackId: string, def: MasterTrackDefinition) {
-  for (const week of def.weeks) {
-    const module = await prisma.module.create({
+export async function seedWeekModule(prisma: PrismaClient, trackId: string, def: MasterTrackDefinition, week: MasterTrackDefinition['weeks'][number]) {
+  const module = await prisma.module.create({
+    data: {
+      trackId,
+      title: `Week ${week.week} — ${week.title}`,
+      description: week.capstone
+        ? `Capstone sprint week for ${def.name}.`
+        : `Week ${week.week} of ${def.name}: ${week.title}`,
+      order: week.week,
+    },
+  });
+
+  const topicsChapter = await prisma.chapter.create({
+    data: { moduleId: module.id, title: 'Topics', order: 1 },
+  });
+
+  for (let i = 0; i < week.topics.length; i++) {
+    const topic = week.topics[i];
+    const subsection = await prisma.subsection.create({
+      data: {
+        chapterId: topicsChapter.id,
+        title: topic,
+        order: i + 1,
+        contentType: ContentType.LESSON,
+      },
+    });
+    await prisma.lesson.create({
+      data: {
+        subsectionId: subsection.id,
+        content: generateDetailedLesson(topic, def.name, def.slug, week.title, week.week),
+        xpReward: 10,
+      },
+    });
+  }
+
+  const labsChapter = await prisma.chapter.create({
+    data: { moduleId: module.id, title: 'Labs', order: 2 },
+  });
+
+  for (let i = 0; i < week.labs.length; i++) {
+    const lab = week.labs[i];
+    const subsection = await prisma.subsection.create({
+      data: {
+        chapterId: labsChapter.id,
+        title: lab,
+        order: i + 1,
+        contentType: ContentType.CODING_EXERCISE,
+      },
+    });
+    const ex = generateLabExercise(lab, def.name, def.slug, week.week, week.title, week.topics);
+    await prisma.codingExercise.create({
+      data: {
+        subsectionId: subsection.id,
+        title: ex.title,
+        difficulty: ex.difficulty,
+        problemStatement: ex.problem,
+        hints: ex.hints,
+        sampleInput: '',
+        sampleOutput: ex.testCases[0]?.expectedOutput,
+        starterCode: ex.starterCode,
+        testCases: ex.testCases,
+        xpReward: 25,
+      },
+    });
+  }
+
+  const assessmentChapter = await prisma.chapter.create({
+    data: { moduleId: module.id, title: 'Weekly Assessment', order: 3 },
+  });
+
+  const quizSub = await prisma.subsection.create({
+    data: {
+      chapterId: assessmentChapter.id,
+      title: `Week ${week.week} Evaluation (50 Questions)`,
+      order: 1,
+      contentType: ContentType.QUIZ,
+    },
+  });
+
+  const weeklyQuiz = generateWeeklyQuiz(def.slug, def.name, week.title, week.week, week.topics);
+  await createQuiz(prisma, quizSub.id, weeklyQuiz);
+
+  const interviewChapter = await prisma.chapter.create({
+    data: { moduleId: module.id, title: 'Interview Preparation', order: 4 },
+  });
+
+  for (let i = 0; i < week.interviewPrep.length; i++) {
+    const topic = week.interviewPrep[i];
+    const subsection = await prisma.subsection.create({
+      data: {
+        chapterId: interviewChapter.id,
+        title: topic,
+        order: i + 1,
+        contentType: ContentType.INTERVIEW,
+      },
+    });
+    await prisma.lesson.create({
+      data: {
+        subsectionId: subsection.id,
+        content: generateInterviewLesson(topic, def.name, def.slug, week.title, week.week),
+        xpReward: 15,
+      },
+    });
+  }
+
+  await prisma.assignment.create({
+    data: {
+      trackId,
+      moduleId: module.id,
+      title: week.capstone ? `Capstone Assignment — ${week.title}` : `Week ${week.week} Assignment`,
+      description: week.capstone
+        ? `Complete your capstone milestone for ${def.name}. Submit architecture docs, repo link, and deployment URL.`
+        : `Assignment: **${week.assignment}**\n\nComplete this implementation exercise for Week ${week.week}: ${week.title}.`,
+      instructions: week.capstone
+        ? def.capstoneRequirements?.map((r, i) => `${i + 1}. ${r}`).join('\n') ||
+          '1. GitHub repo\n2. Documentation\n3. Deployment\n4. Presentation'
+        : `1. Read all topic lessons\n2. Complete lab exercises\n3. Implement: ${week.assignment}\n4. Pass the weekly assessment (80% minimum)\n5. Submit your solution`,
+      deadline: new Date(Date.now() + week.week * 7 * 24 * 60 * 60 * 1000),
+      maxScore: 100,
+      allowResubmit: true,
+    },
+  });
+
+  if (!week.capstone) {
+    await prisma.miniProject.create({
       data: {
         trackId,
-        title: `Week ${week.week} — ${week.title}`,
-        description: week.capstone
-          ? `Capstone sprint week for ${def.name}.`
-          : `Week ${week.week} of ${def.name}: ${week.title}`,
+        title: `Week ${week.week} Mini Project: ${week.miniProject}`,
+        description: `Build **${week.miniProject}** as the Week ${week.week} mini project for ${def.name}.`,
+        requirements: `## Requirements\n- Implement ${week.miniProject}\n- GitHub repository with README\n- Screenshots or demo URL\n- Documentation explaining architecture\n\n## Related Topics\n${week.topics.map((t) => `- ${t}`).join('\n')}`,
+        maxScore: 100,
         order: week.week,
       },
     });
+  }
 
-    // Topics chapter
-    const topicsChapter = await prisma.chapter.create({
-      data: { moduleId: module.id, title: 'Topics', order: 1 },
-    });
+  return module;
+}
 
-    for (let i = 0; i < week.topics.length; i++) {
-      const topic = week.topics[i];
-      const subsection = await prisma.subsection.create({
-        data: {
-          chapterId: topicsChapter.id,
-          title: topic,
-          order: i + 1,
-          contentType: ContentType.LESSON,
-        },
-      });
-      await prisma.lesson.create({
-        data: {
-          subsectionId: subsection.id,
-          content: generateDetailedLesson(topic, def.name, def.slug, week.title, week.week),
-          xpReward: 10,
-        },
-      });
-    }
-
-    // Labs chapter
-    const labsChapter = await prisma.chapter.create({
-      data: { moduleId: module.id, title: 'Labs', order: 2 },
-    });
-
-    for (let i = 0; i < week.labs.length; i++) {
-      const lab = week.labs[i];
-      const subsection = await prisma.subsection.create({
-        data: {
-          chapterId: labsChapter.id,
-          title: lab,
-          order: i + 1,
-          contentType: ContentType.CODING_EXERCISE,
-        },
-      });
-      const ex = generateLabExercise(lab, def.name, def.slug, week.week, week.title, week.topics);
-      await prisma.codingExercise.create({
-        data: {
-          subsectionId: subsection.id,
-          title: ex.title,
-          difficulty: ex.difficulty,
-          problemStatement: ex.problem,
-          hints: ex.hints,
-          sampleInput: '',
-          sampleOutput: ex.testCases[0]?.expectedOutput,
-          starterCode: ex.starterCode,
-          testCases: ex.testCases,
-          xpReward: 25,
-        },
-      });
-    }
-
-    // Weekly assessment — 50 questions
-    const assessmentChapter = await prisma.chapter.create({
-      data: { moduleId: module.id, title: 'Weekly Assessment', order: 3 },
-    });
-
-    const quizSub = await prisma.subsection.create({
-      data: {
-        chapterId: assessmentChapter.id,
-        title: `Week ${week.week} Evaluation (50 Questions)`,
-        order: 1,
-        contentType: ContentType.QUIZ,
-      },
-    });
-
-    const weeklyQuiz = generateWeeklyQuiz(def.slug, def.name, week.title, week.week, week.topics);
-    await createQuiz(prisma, quizSub.id, weeklyQuiz);
-
-    // Interview prep chapter
-    const interviewChapter = await prisma.chapter.create({
-      data: { moduleId: module.id, title: 'Interview Preparation', order: 4 },
-    });
-
-    for (let i = 0; i < week.interviewPrep.length; i++) {
-      const topic = week.interviewPrep[i];
-      const subsection = await prisma.subsection.create({
-        data: {
-          chapterId: interviewChapter.id,
-          title: topic,
-          order: i + 1,
-          contentType: ContentType.INTERVIEW,
-        },
-      });
-      await prisma.lesson.create({
-        data: {
-          subsectionId: subsection.id,
-          content: generateInterviewLesson(topic, def.name, def.slug, week.title, week.week),
-          xpReward: 15,
-        },
-      });
-    }
-
-    // Assignment per week
-    await prisma.assignment.create({
-      data: {
-        trackId,
-        moduleId: module.id,
-        title: week.capstone ? `Capstone Assignment — ${week.title}` : `Week ${week.week} Assignment`,
-        description: week.capstone
-          ? `Complete your capstone milestone for ${def.name}. Submit architecture docs, repo link, and deployment URL.`
-          : `Assignment: **${week.assignment}**\n\nComplete this implementation exercise for Week ${week.week}: ${week.title}.`,
-        instructions: week.capstone
-          ? def.capstoneRequirements?.map((r, i) => `${i + 1}. ${r}`).join('\n') ||
-            '1. GitHub repo\n2. Documentation\n3. Deployment\n4. Presentation'
-          : `1. Read all topic lessons\n2. Complete lab exercises\n3. Implement: ${week.assignment}\n4. Pass the weekly assessment (80% minimum)\n5. Submit your solution`,
-        deadline: new Date(Date.now() + week.week * 7 * 24 * 60 * 60 * 1000),
-        maxScore: 100,
-        allowResubmit: true,
-      },
-    });
-
-    // Mini project per week (capstone week gets capstone project instead)
-    if (!week.capstone) {
-      await prisma.miniProject.create({
-        data: {
-          trackId,
-          title: `Week ${week.week} Mini Project: ${week.miniProject}`,
-          description: `Build **${week.miniProject}** as the Week ${week.week} mini project for ${def.name}.`,
-          requirements: `## Requirements\n- Implement ${week.miniProject}\n- GitHub repository with README\n- Screenshots or demo URL\n- Documentation explaining architecture\n\n## Related Topics\n${week.topics.map((t) => `- ${t}`).join('\n')}`,
-          maxScore: 100,
-          order: week.week,
-        },
-      });
-    }
+async function seedTrackContent(prisma: PrismaClient, trackId: string, def: MasterTrackDefinition) {
+  for (const week of def.weeks) {
+    await seedWeekModule(prisma, trackId, def, week);
   }
 
   // Track-level capstone

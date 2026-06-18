@@ -54,6 +54,22 @@ const TOPIC_CLI: Record<string, CliCommand[]> = {
     { command: '\\dt', whereUsed: 'Inside psql', explanation: 'List all tables.' },
     { command: 'EXPLAIN ANALYZE SELECT * FROM users WHERE email = $1;', whereUsed: 'Slow query tuning', explanation: 'Show query plan and cost.' },
   ],
+  'sqlite with python': [
+    { command: 'python3 -c "import sqlite3; c=sqlite3.connect(\':memory:\'); print(\'ok\')"', whereUsed: 'Verify sqlite3 module', explanation: 'Quick check that Python SQLite works.' },
+    { command: 'sqlite3 students.db ".tables"', whereUsed: 'Inspect local DB file', explanation: 'List tables in SQLite file from CLI.' },
+  ],
+  numpy: [
+    { command: 'python3 -c "import numpy as np; print(np.__version__)"', whereUsed: 'Verify NumPy install', explanation: 'Check NumPy is available in venv.' },
+    { command: 'pip install numpy pandas matplotlib scikit-learn', whereUsed: 'Data science stack setup', explanation: 'Install core data science libraries.' },
+  ],
+  pandas: [
+    { command: 'python3 -c "import pandas as pd; print(pd.__version__)"', whereUsed: 'Verify Pandas install', explanation: 'Check Pandas import in project venv.' },
+    { command: 'python3 -c "import pandas as pd; df=pd.read_csv(\'sales.csv\'); print(df.head())"', whereUsed: 'Quick CSV inspect', explanation: 'Load and preview CSV from terminal.' },
+  ],
+  'sqlalchemy basics': [
+    { command: 'pip install sqlalchemy alembic', whereUsed: 'Python ORM setup', explanation: 'Install SQLAlchemy and migration tool.' },
+    { command: 'alembic upgrade head', whereUsed: 'Apply DB migrations', explanation: 'Run pending schema migrations.' },
+  ],
   transformers: [
     { command: 'python3 -c "import tiktoken; print(len(tiktoken.encoding_for_model(\'gpt-4o-mini\').encode(\'Hello\')))"', whereUsed: 'Cost estimation', explanation: 'Count tokens before API call.' },
     { command: 'curl https://api.openai.com/v1/models -H "Authorization: Bearer $OPENAI_API_KEY"', whereUsed: 'Verify API key', explanation: 'List available models.' },

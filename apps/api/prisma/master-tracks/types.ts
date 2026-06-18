@@ -21,7 +21,7 @@ export interface MasterTrackDefinition {
   difficulty: 'BEGINNER' | 'INTERMEDIATE' | 'ADVANCED';
   category: 'FOUNDATION' | 'SPECIALIZATION' | 'INDUSTRY';
   trackLevel: 1 | 2 | 3;
-  estimatedWeeks: 8;
+  estimatedWeeks: number;
   isPlaceholder: boolean;
   weeks: WeekDefinition[];
   capstoneOptions?: string[];

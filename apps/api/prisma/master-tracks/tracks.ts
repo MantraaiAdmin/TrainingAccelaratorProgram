@@ -1,17 +1,19 @@
 import { MasterTrackDefinition } from './types';
 
-/** 8 intensive weeks ≈ 6 months of engineering fundamentals (≈12–15 deep topics/week). */
+/** 10 intensive weeks ≈ 6 months of engineering fundamentals (≈12–15 deep topics/week). */
 export const MASTER_TRACKS: MasterTrackDefinition[] = [
   {
     slug: 'python-engineering-foundations',
-    name: 'Python Engineering Foundations',
-    tagline: 'Build backend systems, automation tools, and production-grade Python skills.',
+    name: 'Foundation Track: Python, Data & AI',
+    tagline: 'Master Python engineering, databases, data science, and AI-ready foundations.',
     description:
-      'An intensive 8-week program (equivalent to ~6 months of structured learning) covering Linux, Git, core Python, DSA, OOP, APIs, and a capstone sprint. Each week includes 12+ deep-dive topics with CLI labs, industry scenarios, and hands-on walkthroughs.',
+      'An intensive 10-week program (equivalent to ~6 months of structured learning) covering Linux, Git, core Python, DSA, OOP, APIs, database engineering, Python for data science, and a capstone sprint. Each week includes 12+ deep-dive topics with CLI labs, industry scenarios, and hands-on walkthroughs.',
     industryPositioning: [
       'building backend systems',
       'automation tools',
       'API integrations',
+      'database engineering',
+      'Python for data science',
       'AI foundations',
       'problem solving',
       'debugging production-level issues',
@@ -19,7 +21,7 @@ export const MASTER_TRACKS: MasterTrackDefinition[] = [
     difficulty: 'BEGINNER',
     category: 'FOUNDATION',
     trackLevel: 1,
-    estimatedWeeks: 8,
+    estimatedWeeks: 10,
     isPlaceholder: false,
     weeks: [
       {
@@ -119,6 +121,34 @@ export const MASTER_TRACKS: MasterTrackDefinition[] = [
       },
       {
         week: 8,
+        title: 'Database Engineering with Python',
+        topics: [
+          'relational databases', 'SQL fundamentals', 'SELECT queries', 'INSERT UPDATE DELETE',
+          'JOINs & relationships', 'database normalization', 'indexes & query performance',
+          'SQLite with Python', 'SQLAlchemy basics', 'CRUD with Python', 'database migrations intro',
+          'transactions & ACID', 'schema design patterns',
+        ],
+        labs: ['SQL query lab', 'joins practice lab', 'sqlite CRUD lab', 'schema design lab', 'sqlalchemy ORM lab'],
+        assignment: 'student records database system',
+        miniProject: 'SQLite-backed student management CLI',
+        interviewPrep: ['SQL interviews', 'database normalization', 'ORM vs raw SQL', 'query optimization scenarios'],
+      },
+      {
+        week: 9,
+        title: 'Python for Data Science',
+        topics: [
+          'data science workflow', 'NumPy arrays', 'Pandas DataFrames', 'data cleaning & missing values',
+          'exploratory data analysis', 'data visualization with Matplotlib', 'descriptive statistics',
+          'feature engineering basics', 'CSV & JSON data loading', 'grouping & aggregation',
+          'correlation analysis', 'intro to scikit-learn',
+        ],
+        labs: ['NumPy operations lab', 'Pandas cleaning lab', 'EDA dashboard lab', 'visualization lab', 'aggregation analysis lab'],
+        assignment: 'sales data analysis report',
+        miniProject: 'interactive data dashboard',
+        interviewPrep: ['pandas interview questions', 'data cleaning scenarios', 'EDA walkthrough questions', 'statistics for interviews'],
+      },
+      {
+        week: 10,
         title: 'Capstone Engineering Sprint',
         topics: [
           'capstone planning', 'requirements & user stories', 'architecture design', 'system diagrams',
@@ -132,7 +162,13 @@ export const MASTER_TRACKS: MasterTrackDefinition[] = [
         capstone: true,
       },
     ],
-    capstoneOptions: ['productivity platform', 'automation suite', 'analytics dashboard', 'AI-powered utility platform'],
+    capstoneOptions: [
+      'productivity platform',
+      'automation suite',
+      'analytics dashboard',
+      'data intelligence platform',
+      'AI-powered utility platform',
+    ],
     capstoneRequirements: ['GitHub repository', 'documentation', 'deployment', 'architecture explanation', 'presentation'],
   },
   {

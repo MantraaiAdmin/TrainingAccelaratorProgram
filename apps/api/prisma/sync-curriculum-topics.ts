@@ -10,6 +10,7 @@ import {
   generateLabExercise,
 } from './master-tracks/lesson-content';
 import { generateWeeklyQuiz } from './master-tracks/quiz-generator';
+import { seedWeekModule } from './master-tracks/track-seeder';
 
 const prisma = new PrismaClient();
 
@@ -151,6 +152,16 @@ async function main() {
       continue;
     }
 
+    await prisma.track.update({
+      where: { id: track.id },
+      data: {
+        name: trackDef.name,
+        tagline: trackDef.tagline,
+        description: trackDef.description,
+        estimatedWeeks: trackDef.estimatedWeeks,
+      },
+    });
+
     console.log(`📘 ${trackDef.name}`);
 
     for (const week of trackDef.weeks) {
@@ -159,8 +170,22 @@ async function main() {
         include: { chapters: { include: { subsections: true } } },
       });
       if (!module) {
-        console.log(`  ⏭ Module week ${week.week} not found`);
+        console.log(`  + Creating module week ${week.week} — ${week.title}`);
+        await seedWeekModule(prisma, track.id, trackDef, week);
         continue;
+      }
+
+      if (module.title !== `Week ${week.week} — ${week.title}`) {
+        await prisma.module.update({
+          where: { id: module.id },
+          data: {
+            title: `Week ${week.week} — ${week.title}`,
+            description: week.capstone
+              ? `Capstone sprint week for ${trackDef.name}.`
+              : `Week ${week.week} of ${trackDef.name}: ${week.title}`,
+          },
+        });
+        console.log(`  ~ Renamed module to Week ${week.week} — ${week.title}`);
       }
 
       const topicsChapter = module.chapters.find((c) => c.title === 'Topics');

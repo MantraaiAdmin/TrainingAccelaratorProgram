@@ -59,6 +59,20 @@ const PYTHON_POOLS: Record<string, Q[]> = {
     mcq('Command to stage all changes?', ['git add .', 'git stage all', 'git commit -a', 'git push .'], 'git add .', 'git add stages; commit saves snapshot.'),
     mcq('Purpose of .gitignore?', ['Exclude files from Git tracking', 'Ignore compiler errors', 'Delete files', 'Encrypt secrets'], 'Exclude files from Git tracking', 'Never commit .env, node_modules, __pycache__.'),
   ],
+  'sql fundamentals': [
+    mcq('Which SQL clause filters rows before grouping?', ['WHERE', 'HAVING', 'ORDER BY', 'GROUP BY'], 'WHERE', 'WHERE filters rows; HAVING filters groups after aggregation.'),
+    mcq('Primary key purpose?', ['Uniquely identify each row', 'Speed up all queries', 'Store JSON data', 'Replace foreign keys'], 'Uniquely identify each row', 'Every table needs a way to uniquely reference rows.'),
+    output('Rows returned from INNER JOIN when no match?', ['Zero rows for non-matching keys', 'NULL-filled rows', 'Error', 'All rows from both tables'], 'Zero rows for non-matching keys', 'INNER JOIN keeps only matching pairs.', '-- students LEFT JOIN enrollments with no enrollments returns 0 rows on INNER'),
+  ],
+  pandas: [
+    mcq('First step after loading a CSV for analysis?', ['Inspect shape, dtypes, and missing values', 'Train a model immediately', 'Delete all null rows', 'Export to JSON'], 'Inspect shape, dtypes, and missing values', 'EDA starts with df.head(), df.info(), df.describe().'),
+    mcq('Pandas equivalent of SQL GROUP BY sum?', ['df.groupby(...).sum()', 'df.merge().sum()', 'df.pivot().mean()', 'df.sort_values()'], 'df.groupby(...).sum()', 'groupby is split-apply-combine — mirrors SQL aggregation.'),
+    output('What does df["score"].mean() return?', ['A single number (mean)', 'A DataFrame', 'Always NaN', 'A Series of all rows'], 'A single number (mean)', 'Aggregation on Series returns scalar.', 'import pandas as pd\ndf = pd.DataFrame({"score": [80, 90]})\nprint(type(df["score"].mean()).__name__)'),
+  ],
+  numpy: [
+    mcq('Main advantage of NumPy arrays over Python lists for math?', ['Vectorized operations in compiled code', 'Can store mixed types easily', 'Always use less memory for strings', 'No need to install'], 'Vectorized operations in compiled code', 'NumPy avoids Python loop overhead on numeric data.'),
+    output('Shape after reshape(3, 4)?', ['(3, 4)', '(12,)', '(4, 3)', 'Error'], '(3, 4)', '12 elements arranged 3 rows by 4 columns.', 'import numpy as np\na = np.arange(12).reshape(3, 4)\nprint(a.shape)'),
+  ],
 };
 
 /** Generic substantive questions when no topic pool exists */

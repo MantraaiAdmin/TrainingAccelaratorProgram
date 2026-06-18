@@ -77,7 +77,7 @@ async function main() {
     { name: 'Code Warrior', description: 'Complete 10 coding exercises', icon: '⚔️', type: AchievementType.PROJECT_COMPLETE, xpRequired: 250 },
     { name: 'Quiz Master', description: 'Score 100% on a weekly assessment', icon: '🏆', type: AchievementType.QUIZ_MASTER, xpRequired: 0 },
     { name: '7-Day Streak', description: 'Maintain a 7-day learning streak', icon: '🔥', type: AchievementType.STREAK, xpRequired: 0 },
-    { name: 'Python Pioneer', description: 'Complete Python Engineering Foundations', icon: '🐍', type: AchievementType.TRACK_COMPLETE, xpRequired: 1000 },
+    { name: 'Python Pioneer', description: 'Complete Foundation Track: Python, Data & AI', icon: '🐍', type: AchievementType.TRACK_COMPLETE, xpRequired: 1000 },
     { name: 'XP Legend', description: 'Earn 5000 XP', icon: '⭐', type: AchievementType.XP_MILESTONE, xpRequired: 5000 },
   ];
 
@@ -101,7 +101,7 @@ async function main() {
       data: {
         title: 'Welcome to Constel Nexus!',
         content:
-          'Welcome to the Constel Nexus Internship Program. Start with Python Engineering Foundations — Week 1 is now available. Pass each weekly assessment (80% minimum) to unlock the next week.',
+          'Welcome to the Constel Nexus Internship Program. Start with Foundation Track: Python, Data & AI — Week 1 is now available. Pass each weekly assessment (80% minimum) to unlock the next week.',
         isActive: true,
       },
     });
@@ -126,7 +126,7 @@ async function main() {
   console.log('  Admin:       admin@constel.ai / Demo@123');
   console.log('  Student:     student@demo.com / Demo@123');
   console.log('\n📚 Master Tracks:');
-  console.log('  1. Python Engineering Foundations (8 weeks, assigned to demo student)');
+  console.log('  1. Foundation Track: Python, Data & AI (10 weeks, assigned to demo student)');
   console.log('  2. Full Stack Product Engineering (8 weeks, placeholder content)');
   console.log('  3. AI Engineering & Intelligent Systems (8 weeks, placeholder content)');
 }

@@ -10,7 +10,7 @@ export function getTopicKnowledge(trackSlug: string, topic: string): TopicKnowle
 
   let base: TopicKnowledge;
   if (trackSlug === 'python-engineering-foundations') {
-    base = getPythonKnowledge(key) ?? defaultKnowledge(topic, 'Python Engineering Foundations', 'python');
+    base = getPythonKnowledge(key) ?? defaultKnowledge(topic, 'Foundation Track: Python, Data & AI', 'python');
   } else if (trackSlug === 'full-stack-product-engineering') {
     base = getFullstackKnowledge(key) ?? fullstackDefault(topic);
   } else if (trackSlug === 'ai-engineering-intelligent-systems') {
