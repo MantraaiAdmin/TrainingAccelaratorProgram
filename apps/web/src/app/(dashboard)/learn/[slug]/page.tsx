@@ -180,24 +180,17 @@ export default function LearnPage() {
       setExpandedModules((prev) => new Set([...prev, mod.id]));
     }
 
-    const needsDetail =
-      sub.contentType === 'QUIZ' ||
-      sub.contentType === 'CODING_EXERCISE';
-
-    if (needsDetail) {
+    setActiveSubsection(sub);
+    setLoadingDetail(true);
+    try {
+      const full = (await api.getSubsection(sub.id)) as Subsection;
+      setActiveSubsection(full);
+      applyAIContext(full);
+    } catch {
+      toast.error('Failed to load content');
       setActiveSubsection(sub);
-      setLoadingDetail(true);
-      try {
-        const full = (await api.getSubsection(sub.id)) as Subsection;
-        setActiveSubsection(full);
-        applyAIContext(full);
-      } catch {
-        toast.error('Failed to load content');
-      } finally {
-        setLoadingDetail(false);
-      }
-    } else {
-      setActiveSubsection(sub);
+    } finally {
+      setLoadingDetail(false);
     }
   }, [track, applyAIContext]);
 
