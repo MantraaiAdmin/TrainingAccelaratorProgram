@@ -547,7 +547,7 @@ model Certificate {
   trackId       String
   studentName   String
   trackName     String
-  programName   String   @default("Constel AI NextGen")
+  programName   String   @default("Mantra.ai")
   issuedAt      DateTime @default(now())
   qrCodeData    String?
   isOverride    Boolean  @default(false)

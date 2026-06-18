@@ -10,6 +10,7 @@ import { Input } from '@/components/ui/input';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Sparkles, Mail, Lock, Eye, EyeOff } from 'lucide-react';
 import { toast } from 'sonner';
+import { BRAND } from '@/lib/branding';
 
 export default function LoginPage() {
   const router = useRouter();
@@ -56,8 +57,8 @@ export default function LoginPage() {
                 <Sparkles className="w-6 h-6" />
               </div>
               <div>
-                <h1 className="text-2xl font-bold">Constel AI NextGen</h1>
-                <p className="text-white/70 text-sm">Constel Global India Pvt. Ltd.</p>
+                <h1 className="text-2xl font-bold">{BRAND.name}</h1>
+                <p className="text-white/70 text-sm">{BRAND.tagline}</p>
               </div>
             </div>
             <h2 className="text-4xl font-bold mb-4 leading-tight">

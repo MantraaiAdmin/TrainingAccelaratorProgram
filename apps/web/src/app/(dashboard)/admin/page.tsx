@@ -8,6 +8,7 @@ import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContaine
 import { QwenUsageMonitor } from '@/components/admin/qwen-usage-monitor';
 import Link from 'next/link';
 import { Award } from 'lucide-react';
+import { BRAND } from '@/lib/branding';
 
 export default function AdminDashboardPage() {
   const { data: analytics, isLoading } = useQuery({
@@ -60,7 +61,7 @@ export default function AdminDashboardPage() {
     <div className="space-y-8">
       <div>
         <h1 className="text-3xl font-bold">Admin Dashboard</h1>
-        <p className="text-muted-foreground mt-1">Constel AI NextGen Platform Management</p>
+        <p className="text-muted-foreground mt-1">{BRAND.name} Platform Management</p>
       </div>
 
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">

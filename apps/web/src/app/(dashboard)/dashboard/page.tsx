@@ -12,6 +12,7 @@ import {
   FileText, Medal, Target, Sparkles, Clock, CheckCircle2, CircleDashed,
 } from 'lucide-react';
 import { cn, formatXP, getDifficultyColor, getDifficultyLabel } from '@/lib/utils';
+import { BRAND } from '@/lib/branding';
 
 interface DashboardData {
   user: {
@@ -123,7 +124,7 @@ export default function DashboardPage() {
               Welcome back, <span className="gradient-text">{data?.user.firstName}</span>
             </h1>
             <p className="text-muted-foreground mt-2 max-w-lg">
-              Continue your journey with Constel AI NextGen — {data?.overallProgress.completed ?? 0} of{' '}
+              Continue your journey with {BRAND.name} — {data?.overallProgress.completed ?? 0} of{' '}
               {data?.overallProgress.total ?? 0} lessons completed across your tracks.
             </p>
           </div>
@@ -402,10 +403,8 @@ export default function DashboardPage() {
             <div className="absolute inset-0 bg-[url('data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNjAiIGhlaWdodD0iNjAiIHZpZXdCb3g9IjAgMCA2MCA2MCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48ZyBmaWxsPSJub25lIiBmaWxsLXJ1bGU9ImV2ZW5vZGQiPjxnIGZpbGw9IiNmZmYiIGZpbGwtb3BhY2l0eT0iMC4wNCI+PHBhdGggIGQ9Ik0zNiAxOGMzLjMxIDAgNiAyLjY5IDYgNnMtMi42OSA2LTYgNi02LTIuNjktNi02IDIuNjktNiA2LTZ6TTI2IDQ4YzMuMzEgMCA2IDIuNjkgNiA2cy0yLjY5IDYtNiA2LTYtMi42OS02LTYgMi42OS02IDYtNnoiLz48L2c+PC9nPjwvc3ZnPg==')] opacity-50" />
             <CardContent className="pt-6 relative">
               <Sparkles className="w-8 h-8" />
-              <h3 className="font-bold mt-3 text-lg">AI Learning Assistant</h3>
-              <p className="text-sm text-white/85 mt-1 leading-relaxed">
-                Get help with concepts, debugging, and hints anytime during your lessons.
-              </p>
+              <h3 className="font-bold mt-3 text-lg">{BRAND.aiAssistantName}</h3>
+              <p className="text-sm text-white/85 mt-1 leading-relaxed">{BRAND.aiTagline}</p>
               <p className="text-xs text-white/55 mt-4">Tap the sparkle button at the bottom right →</p>
             </CardContent>
           </Card>

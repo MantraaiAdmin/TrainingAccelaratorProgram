@@ -5,6 +5,7 @@ import { motion } from 'framer-motion';
 import { api } from '@/lib/api';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Trophy, Medal, Crown } from 'lucide-react';
+import { BRAND } from '@/lib/branding';
 
 interface LeaderboardEntry {
   rank: number;
@@ -28,7 +29,7 @@ export default function LeaderboardPage() {
       <div className="text-center">
         <Trophy className="w-12 h-12 mx-auto text-yellow-500 mb-3" />
         <h1 className="text-3xl font-bold">Leaderboard</h1>
-        <p className="text-muted-foreground mt-1">Top performers in Constel AI NextGen</p>
+        <p className="text-muted-foreground mt-1">Top performers on {BRAND.name}</p>
       </div>
 
       {isLoading ? (

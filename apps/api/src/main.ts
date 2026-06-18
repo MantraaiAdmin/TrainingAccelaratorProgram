@@ -36,7 +36,7 @@ async function bootstrap() {
   app.setGlobalPrefix('api/v1');
 
   const config = new DocumentBuilder()
-    .setTitle('Constel AI NextGen API')
+    .setTitle('Mantra.ai API')
     .setDescription('Internship Learning & Management Platform API')
     .setVersion('1.0')
     .addBearerAuth()
@@ -46,7 +46,7 @@ async function bootstrap() {
 
   const port = Number(process.env.PORT || process.env.API_PORT || 4000);
   await app.listen(port);
-  console.log(`🚀 Constel AI NextGen API running on http://localhost:${port}`);
+  console.log(`🚀 Mantra.ai API running on http://localhost:${port}`);
   console.log(`📚 Swagger docs at http://localhost:${port}/api/docs`);
 }
 

@@ -3,6 +3,7 @@
 import { useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { useAuthStore } from '@/lib/store';
+import { BRAND } from '@/lib/branding';
 
 export default function HomePage() {
   const router = useRouter();
@@ -14,7 +15,7 @@ export default function HomePage() {
 
   return (
     <div className="min-h-screen flex items-center justify-center">
-      <div className="animate-pulse gradient-text text-xl font-bold">Loading Constel AI NextGen...</div>
+      <div className="animate-pulse gradient-text text-xl font-bold">Loading {BRAND.name}...</div>
     </div>
   );
 }

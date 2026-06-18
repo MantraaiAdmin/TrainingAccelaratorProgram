@@ -11,6 +11,7 @@ import {
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { useState } from 'react';
+import { BRAND } from '@/lib/branding';
 
 const studentNav = [
   { href: '/dashboard', label: 'Dashboard', icon: LayoutDashboard },
@@ -81,16 +82,16 @@ function SidebarPanel({
             href={homeHref}
             onClick={onNavigate}
             className={cn('flex items-center gap-3 min-w-0', collapsed && 'justify-center')}
-            title={collapsed ? 'Constel AI NextGen' : undefined}
+            title={collapsed ? BRAND.name : undefined}
           >
             <div className="w-10 h-10 rounded-xl gradient-bg flex items-center justify-center shrink-0">
               <Sparkles className="w-5 h-5 text-white" />
             </div>
             {!collapsed && (
               <div className="min-w-0">
-                <h1 className="font-bold text-sm gradient-text leading-tight">Constel AI NextGen</h1>
+                <h1 className="font-bold text-sm gradient-text leading-tight">{BRAND.name}</h1>
                 <p className="text-xs text-muted-foreground truncate">
-                  {isAdmin ? 'Admin Portal' : 'Internship Platform'}
+                  {isAdmin ? 'Admin Portal' : BRAND.tagline}
                 </p>
               </div>
             )}

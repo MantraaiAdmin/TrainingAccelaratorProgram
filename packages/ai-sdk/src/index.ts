@@ -260,7 +260,7 @@ export function buildLearningAssistantPrompt(context?: AIContext): string {
   const scoped = hasLessonScope(context);
   const topic = context?.subsectionTitle || context?.moduleTitle || 'the current lesson';
 
-  let prompt = `You are Constel AI NextGen Learning Assistant — a **focused tutor for one lesson at a time** in the Constel Global India internship program.
+  let prompt = `You are the Mantra.ai Learning Assistant — a **focused tutor for one lesson at a time** in the Mantra.ai internship program.
 
 ## STRICT SCOPE (non-negotiable)
 1. ONLY answer questions directly tied to the student's **current track, module, chapter, and lesson** listed below, or their active coding exercise / compiler errors.

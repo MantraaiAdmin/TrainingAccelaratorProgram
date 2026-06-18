@@ -1,7 +1,11 @@
 export const APP_CONFIG = {
-  name: 'Constel AI NextGen',
-  company: 'Constel Global India Pvt. Ltd.',
-  programName: 'Constel AI NextGen Internship Program',
+  name: 'Mantra.ai',
+  company: 'Mantra.ai',
+  programName: 'Mantra.ai Internship Program',
+  tagline: 'Learn smarter. Build faster. Ship with confidence.',
+  aiAssistantName: 'Mantra AI Tutor',
+  aiTagline: 'Your 24/7 learning companion — syllabus-focused guidance from first concept to production-ready code.',
+  aiEmptyStateHint: 'Master every lesson with instant help on concepts, examples, and exercise hints — powered by Mantra.ai.',
   version: '1.0.0',
 } as const;
 

@@ -8,6 +8,7 @@ import { Send, Bot, Sparkles, Copy, Check, PanelRightClose } from 'lucide-react'
 import ReactMarkdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
 import { cn } from '@/lib/utils';
+import { BRAND } from '@/lib/branding';
 
 interface AIChatPanelProps {
   onClose?: () => void;
@@ -76,7 +77,7 @@ export function AIChatPanel({ onClose, className, compact }: AIChatPanelProps) {
             <Bot className="w-4 h-4 text-white" />
           </div>
           <div className="min-w-0">
-            <h3 className="font-semibold text-sm truncate">AI Learning Assistant</h3>
+            <h3 className="font-semibold text-sm truncate">{BRAND.aiAssistantName}</h3>
             <p className="text-xs text-muted-foreground truncate" title={scopeHint}>{scopeHint}</p>
           </div>
         </div>
@@ -89,12 +90,18 @@ export function AIChatPanel({ onClose, className, compact }: AIChatPanelProps) {
 
       <div className="flex-1 overflow-y-auto p-4 space-y-4 min-h-0 scroll-area">
         {messages.length === 0 && (
-          <div className="text-center py-8 space-y-3">
-            <Sparkles className="w-8 h-8 mx-auto text-purple-500" />
-            <p className="text-sm text-muted-foreground px-2">
+          <div className="text-center py-8 space-y-4 px-3">
+            <div className="relative inline-flex">
+              <Sparkles className="w-10 h-10 mx-auto text-purple-500" />
+            </div>
+            <div className="space-y-1">
+              <p className="text-sm font-medium gradient-text">{BRAND.tagline}</p>
+              <p className="text-xs text-muted-foreground">{BRAND.aiTagline}</p>
+            </div>
+            <p className="text-sm text-muted-foreground leading-relaxed">
               {lessonTopic
                 ? `Ask about "${lessonTopic}" — concepts, examples, or exercise hints for this lesson only.`
-                : 'Open a lesson from the curriculum sidebar. I only answer questions related to your current module.'}
+                : BRAND.aiEmptyStateHint}
             </p>
           </div>
         )}

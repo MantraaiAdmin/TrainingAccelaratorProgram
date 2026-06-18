@@ -5,7 +5,7 @@ import { seedMasterTracks } from './master-tracks/track-seeder';
 const prisma = new PrismaClient();
 
 async function main() {
-  console.log('🌱 Seeding Constel Nexus database...');
+  console.log('🌱 Seeding Mantra.ai database...');
 
   const passwordHash = await bcrypt.hash('Demo@123', 12);
 
@@ -94,14 +94,14 @@ async function main() {
   });
 
   const existingAnnouncement = await prisma.announcement.findFirst({
-    where: { title: 'Welcome to Constel Nexus!' },
+    where: { title: { in: ['Welcome to Constel Nexus!', 'Welcome to Mantra.ai!'] } },
   });
   if (!existingAnnouncement) {
     await prisma.announcement.create({
       data: {
-        title: 'Welcome to Constel Nexus!',
+        title: 'Welcome to Mantra.ai!',
         content:
-          'Welcome to the Constel Nexus Internship Program. Start with Foundation Track: Python, Data & AI — Week 1 is now available. Pass each weekly assessment (80% minimum) to unlock the next week.',
+          'Welcome to the Mantra.ai Internship Program. Start with Foundation Track: Python, Data & AI — Week 1 is now available. Pass each weekly assessment (80% minimum) to unlock the next week.',
         isActive: true,
       },
     });

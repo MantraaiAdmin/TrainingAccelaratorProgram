@@ -6,6 +6,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Award, Download } from 'lucide-react';
 import { toast } from 'sonner';
+import { BRAND } from '@/lib/branding';
 
 export default function CertificatesPage() {
   const { data: certificates, isLoading, refetch } = useQuery({
@@ -48,7 +49,7 @@ export default function CertificatesPage() {
               <CardContent className="space-y-4">
                 <div className="text-sm space-y-1">
                   <p><strong>Student:</strong> {cert.studentName}</p>
-                  <p><strong>Program:</strong> Constel AI NextGen</p>
+                  <p><strong>Program:</strong> {BRAND.programName}</p>
                   <p><strong>Issued:</strong> {new Date(cert.issuedAt).toLocaleDateString()}</p>
                 </div>
                 {cert.qrCodeData && (
