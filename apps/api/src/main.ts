@@ -9,7 +9,10 @@ async function bootstrap() {
 
   app.use(helmet());
   const isDev = process.env.NODE_ENV !== 'production';
-  const corsOrigin = process.env.CORS_ORIGIN || 'http://localhost:3000';
+  const corsOrigins = (process.env.CORS_ORIGIN || 'http://localhost:3000')
+    .split(',')
+    .map((origin) => origin.trim())
+    .filter(Boolean);
   app.enableCors({
     origin: isDev
       ? (origin: string | undefined, callback: (err: Error | null, allow?: boolean) => void) => {
@@ -18,10 +21,12 @@ async function bootstrap() {
             /^https?:\/\/(localhost|127\.0\.0\.1|192\.168\.\d+\.\d+|10\.\d+\.\d+\.\d+)(:\d+)?$/.test(
               origin,
             );
-          if (devOrigin || origin === corsOrigin) return callback(null, true);
+          if (devOrigin || corsOrigins.includes(origin)) return callback(null, true);
           callback(new Error(`CORS blocked origin: ${origin}`));
         }
-      : corsOrigin,
+      : corsOrigins.length === 1
+        ? corsOrigins[0]
+        : corsOrigins,
     credentials: true,
   });
 
@@ -44,7 +49,7 @@ async function bootstrap() {
   const document = SwaggerModule.createDocument(app, config);
   SwaggerModule.setup('api/docs', app, document);
 
-  const port = process.env.API_PORT || 4000;
+  const port = Number(process.env.PORT || process.env.API_PORT || 4000);
   await app.listen(port);
   console.log(`🚀 Constel AI NextGen API running on http://localhost:${port}`);
   console.log(`📚 Swagger docs at http://localhost:${port}/api/docs`);
