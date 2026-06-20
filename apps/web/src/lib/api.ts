@@ -37,7 +37,7 @@ class ApiClient {
     };
 
     let response: Response;
-    const timeoutMs = endpoint.includes('/auth/login') ? 90000 : 30000;
+    const timeoutMs = endpoint.includes('/auth/login') ? 20000 : 30000;
     const controller = typeof AbortController !== 'undefined' ? new AbortController() : null;
     const timeoutId = controller ? setTimeout(() => controller.abort(), timeoutMs) : null;
     try {
@@ -50,9 +50,7 @@ class ApiClient {
       if (timeoutId) clearTimeout(timeoutId);
       const message = (err as Error).message || '';
       if (message === 'Failed to fetch' || err instanceof TypeError || message.includes('aborted')) {
-        throw new Error(
-          'Cannot reach the server. Wait 60 seconds and try again, or check your internet connection.',
-        );
+        throw new Error('Unable to sign in right now. Please try again.');
       }
       throw err;
     }
@@ -97,6 +95,11 @@ class ApiClient {
     } catch {
       return false;
     }
+  }
+
+  warmUp() {
+    if (typeof window === 'undefined') return;
+    void fetch(`${this.baseUrl}/api/v1/health`, { method: 'GET', cache: 'no-store' }).catch(() => {});
   }
 
   // Auth

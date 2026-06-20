@@ -26,12 +26,12 @@ export class AuthService {
     const user = await this.validateUser(email, password);
     if (!user) throw new UnauthorizedException('Invalid credentials');
 
-    await this.prisma.user.update({
-      where: { id: user.id },
-      data: { lastLoginAt: new Date() },
-    });
+    const tokensPromise = this.generateTokens(user.id, user.email, user.role);
+    void this.prisma.user
+      .update({ where: { id: user.id }, data: { lastLoginAt: new Date() } })
+      .catch(() => {});
 
-    const tokens = await this.generateTokens(user.id, user.email, user.role);
+    const tokens = await tokensPromise;
     return {
       user: this.sanitizeUser(user),
       ...tokens,

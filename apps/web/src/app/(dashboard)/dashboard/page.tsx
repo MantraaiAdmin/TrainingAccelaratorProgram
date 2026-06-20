@@ -108,7 +108,7 @@ export default function DashboardPage() {
       <div className="rounded-2xl border border-destructive/40 bg-destructive/5 p-8 text-center space-y-4">
         <h2 className="text-xl font-semibold">Could not load your dashboard</h2>
         <p className="text-muted-foreground text-sm max-w-md mx-auto">
-          The server may be waking up (this can take up to 60 seconds on first load). Please wait and try again.
+          We could not load your dashboard. Please try again in a moment.
         </p>
         <Button onClick={() => refetch()}>Retry</Button>
       </div>

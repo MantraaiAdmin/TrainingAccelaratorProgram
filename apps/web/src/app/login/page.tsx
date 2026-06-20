@@ -1,7 +1,7 @@
 'use client';
 
 import Image from 'next/image';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { motion } from 'framer-motion';
 import { useAuthStore } from '@/lib/store';
@@ -21,6 +21,12 @@ export default function LoginPage() {
   const [showPassword, setShowPassword] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
 
+  useEffect(() => {
+    api.warmUp();
+    router.prefetch('/dashboard');
+    router.prefetch('/admin');
+  }, [router]);
+
   const clearAutofill = (event: React.FocusEvent<HTMLInputElement>) => {
     event.target.removeAttribute('readonly');
   };
@@ -28,7 +34,6 @@ export default function LoginPage() {
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsLoading(true);
-    toast.info('Signing in… first login may take up to 60 seconds while the server wakes up.');
     try {
       const result = await api.login(email, password);
       setAuth(result.user as never, result.accessToken, result.refreshToken);
