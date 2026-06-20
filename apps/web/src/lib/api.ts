@@ -406,6 +406,10 @@ class ApiClient {
     return this.fetch(`/admin/submissions${qs ? `?${qs}` : ''}`);
   }
 
+  getAdminSubmissionDetail(type: 'lab' | 'assignment', id: string) {
+    return this.fetch(`/admin/submissions/${type}/${id}`);
+  }
+
   reviewSubmission(
     type: 'lab' | 'assignment',
     id: string,

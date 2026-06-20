@@ -1160,6 +1160,121 @@ export class AdminService {
     };
   }
 
+  async getSubmissionDetail(type: 'lab' | 'assignment', submissionId: string) {
+    if (type === 'lab') {
+      const lab = await this.prisma.exerciseSubmission.findUnique({
+        where: { id: submissionId },
+        include: {
+          user: {
+            select: {
+              id: true,
+              email: true,
+              firstName: true,
+              lastName: true,
+              year: true,
+              college: { select: { id: true, name: true } },
+              department: { select: { id: true, name: true, code: true } },
+              trackAssignments: {
+                where: { isActive: true },
+                select: { track: { select: { id: true, name: true, slug: true } } },
+              },
+            },
+          },
+          exercise: {
+            select: {
+              title: true,
+              subsection: {
+                select: {
+                  title: true,
+                  chapter: {
+                    select: {
+                      title: true,
+                      module: {
+                        select: {
+                          title: true,
+                          track: { select: { id: true, name: true, slug: true } },
+                        },
+                      },
+                    },
+                  },
+                },
+              },
+            },
+          },
+        },
+      });
+      if (!lab) throw new NotFoundException('Lab submission not found');
+      const track = lab.exercise.subsection.chapter.module.track;
+      return {
+        id: lab.id,
+        type: 'LAB' as const,
+        status: lab.status,
+        submittedAt: lab.submittedAt.toISOString(),
+        studentName: `${lab.user.firstName} ${lab.user.lastName}`,
+        student: lab.user,
+        collegeName: lab.user.college?.name ?? 'Unassigned',
+        departmentName: lab.user.department?.name ?? null,
+        year: lab.user.year,
+        trackName: track.name,
+        track,
+        moduleTitle: lab.exercise.subsection.chapter.module.title,
+        title: lab.exercise.title,
+        passedTests: lab.passedTests,
+        totalTests: lab.totalTests,
+        code: lab.code,
+        feedback: lab.feedback,
+      };
+    }
+
+    const sub = await this.prisma.assignmentSubmission.findUnique({
+      where: { id: submissionId },
+      include: {
+        user: {
+          select: {
+            id: true,
+            email: true,
+            firstName: true,
+            lastName: true,
+            year: true,
+            college: { select: { id: true, name: true } },
+            department: { select: { id: true, name: true, code: true } },
+            trackAssignments: {
+              where: { isActive: true },
+              select: { track: { select: { id: true, name: true, slug: true } } },
+            },
+          },
+        },
+        assignment: {
+          select: {
+            title: true,
+            track: { select: { id: true, name: true, slug: true } },
+            module: { select: { title: true } },
+          },
+        },
+      },
+    });
+    if (!sub) throw new NotFoundException('Assignment submission not found');
+    return {
+      id: sub.id,
+      type: 'ASSIGNMENT' as const,
+      status: sub.status,
+      submittedAt: sub.submittedAt.toISOString(),
+      studentName: `${sub.user.firstName} ${sub.user.lastName}`,
+      student: sub.user,
+      collegeName: sub.user.college?.name ?? 'Unassigned',
+      departmentName: sub.user.department?.name ?? null,
+      year: sub.user.year,
+      trackName: sub.assignment.track.name,
+      track: sub.assignment.track,
+      moduleTitle: sub.assignment.module?.title ?? null,
+      title: sub.assignment.title,
+      content: sub.content,
+      code: sub.code ?? undefined,
+      feedback: sub.feedback,
+      score: sub.score,
+    };
+  }
+
   async reviewSubmission(
     type: 'lab' | 'assignment',
     submissionId: string,

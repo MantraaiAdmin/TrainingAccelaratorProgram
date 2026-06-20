@@ -238,6 +238,11 @@ export class AdminController {
     });
   }
 
+  @Get('submissions/:type/:id')
+  getSubmissionDetail(@Param('type') type: 'lab' | 'assignment', @Param('id') id: string) {
+    return this.adminService.getSubmissionDetail(type, id);
+  }
+
   @Put('submissions/:type/:id/review')
   reviewSubmission(
     @Param('type') type: 'lab' | 'assignment',
