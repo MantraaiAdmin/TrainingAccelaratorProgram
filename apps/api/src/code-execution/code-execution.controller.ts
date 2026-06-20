@@ -4,7 +4,6 @@ import { IsString } from 'class-validator';
 import { ApiProperty } from '@nestjs/swagger';
 import { CodeExecutionService } from './code-execution.service';
 import { PrismaService } from '../prisma/prisma.service';
-import { GamificationService } from '../gamification/gamification.service';
 import { JwtAuthGuard } from '../auth/guards/roles.guard';
 
 class RunCodeDto {
@@ -31,7 +30,6 @@ export class CodeExecutionController {
   constructor(
     private codeService: CodeExecutionService,
     private prisma: PrismaService,
-    private gamification: GamificationService,
   ) {}
 
   @Post('run')
@@ -63,19 +61,16 @@ export class CodeExecutionController {
         passedTests: result.passed || 0,
         totalTests: result.total || 0,
         executionMs: result.executionTimeMs,
-        status: result.success ? 'APPROVED' : 'SUBMITTED',
+        status: 'SUBMITTED',
       },
     });
 
-    if (result.success) {
-      await this.gamification.awardXP(req.user.id, exercise.xpReward, 'coding_exercise', exerciseId);
-      await this.prisma.progressRecord.upsert({
-        where: { userId_subsectionId: { userId: req.user.id, subsectionId: exercise.subsectionId } },
-        create: { userId: req.user.id, subsectionId: exercise.subsectionId, isCompleted: true, completedAt: new Date() },
-        update: { isCompleted: true, completedAt: new Date() },
-      });
-    }
-
-    return result;
+    return {
+      ...result,
+      pendingReview: true,
+      message: result.success
+        ? 'All tests passed. Submission sent to admin for review.'
+        : 'Submission sent to admin for review.',
+    };
   }
 }

@@ -7,7 +7,7 @@ import { cn } from '@/lib/utils';
 import {
   LayoutDashboard, BookOpen, Trophy, Award, LogOut,
   Moon, Sun, Menu, X, Shield, Sparkles, Users, TrendingUp, Layers, Percent,
-  ChevronLeft, ChevronRight, UserCog,
+  ChevronLeft, ChevronRight, UserCog, ClipboardCheck,
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { useState } from 'react';
@@ -23,6 +23,7 @@ const studentNav = [
 const adminNav = [
   { href: '/admin', label: 'Dashboard', icon: Shield, exact: true },
   { href: '/admin/students', label: 'Students', icon: Users },
+  { href: '/admin/submissions', label: 'Lab Reviews', icon: ClipboardCheck },
   { href: '/admin/users', label: 'Admin Users', icon: UserCog },
   { href: '/admin/tracks', label: 'Course Tracks', icon: Layers },
   { href: '/admin/commissions', label: 'Commission', icon: Percent },

@@ -93,7 +93,7 @@ export class ProgressService {
       if (a.moduleId && !unlockedModuleIds.has(a.moduleId)) return false;
       const sub = a.submissions[0];
       if (!sub) return true;
-      return sub.status === 'PENDING' || sub.status === 'RESUBMIT';
+      return sub.status === 'PENDING' || sub.status === 'RESUBMIT' || sub.status === 'REJECTED';
     });
 
     // Show at most the current week's open assignments (avoid listing all 8+ weeks at once)

@@ -212,4 +212,39 @@ export class AdminController {
   updateCollegeCommission(@Param('collegeId') collegeId: string, @Body() body: CommissionConfig) {
     return this.adminService.updateCollegeCommission(collegeId, body);
   }
+
+  @Get('submissions')
+  getSubmissions(
+    @Query('page') page?: string,
+    @Query('pageSize') pageSize?: string,
+    @Query('search') search?: string,
+    @Query('sortBy') sortBy?: string,
+    @Query('sortOrder') sortOrder?: 'asc' | 'desc',
+    @Query('collegeId') collegeId?: string,
+    @Query('year') year?: string,
+    @Query('trackId') trackId?: string,
+    @Query('status') status?: 'pending' | 'approved' | 'rejected' | 'all',
+    @Query('type') type?: 'lab' | 'assignment' | 'all',
+  ) {
+    return this.adminService.getSubmissions(parseInt(page || '1', 10), parseInt(pageSize || '20', 10), {
+      search,
+      sortBy,
+      sortOrder,
+      collegeId,
+      year: year ? parseInt(year, 10) : undefined,
+      trackId,
+      status: status || 'pending',
+      type: type || 'all',
+    });
+  }
+
+  @Put('submissions/:type/:id/review')
+  reviewSubmission(
+    @Param('type') type: 'lab' | 'assignment',
+    @Param('id') id: string,
+    @Body() body: { action: 'approve' | 'reject'; feedback?: string; score?: number },
+    @Request() req: { user: { id: string } },
+  ) {
+    return this.adminService.reviewSubmission(type, id, req.user.id, body);
+  }
 }

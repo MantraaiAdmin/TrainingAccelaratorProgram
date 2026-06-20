@@ -13,10 +13,14 @@ import {
   configToCollegeData,
   withDerivedCompany,
 } from './commission.util';
+import { GamificationService } from '../gamification/gamification.service';
 
 @Injectable()
 export class AdminService {
-  constructor(private prisma: PrismaService) {}
+  constructor(
+    private prisma: PrismaService,
+    private gamification: GamificationService,
+  ) {}
 
   async getAnalytics() {
     const sevenDaysAgo = new Date(Date.now() - 7 * 24 * 60 * 60 * 1000);
@@ -915,5 +919,344 @@ export class AdminService {
         totalPages: Math.ceil(totalStudentsWithUsage.length / pageSize) || 1,
       },
     };
+  }
+
+  async getSubmissions(
+    page = 1,
+    pageSize = 20,
+    options: {
+      search?: string;
+      sortBy?: string;
+      sortOrder?: 'asc' | 'desc';
+      collegeId?: string;
+      year?: number;
+      trackId?: string;
+      status?: string;
+      type?: 'lab' | 'assignment' | 'all';
+    } = {},
+  ) {
+    const { search, sortBy, sortOrder = 'desc', collegeId, year, trackId, status, type = 'all' } = options;
+
+    let reviewStatuses: string[] | undefined;
+    if (!status || status === 'pending') {
+      reviewStatuses = ['SUBMITTED', 'PENDING', 'RESUBMIT'];
+    } else if (status === 'approved') {
+      reviewStatuses = ['APPROVED', 'GRADED'];
+    } else if (status === 'rejected') {
+      reviewStatuses = ['REJECTED'];
+    }
+
+    const userWhere: Record<string, unknown> = { role: 'STUDENT' };
+    if (collegeId) userWhere.collegeId = collegeId;
+    if (year) userWhere.year = year;
+    if (search?.trim()) {
+      userWhere.OR = [
+        { firstName: { contains: search.trim(), mode: 'insensitive' } },
+        { lastName: { contains: search.trim(), mode: 'insensitive' } },
+        { email: { contains: search.trim(), mode: 'insensitive' } },
+      ];
+    }
+
+    const studentSelect = {
+      id: true,
+      email: true,
+      firstName: true,
+      lastName: true,
+      year: true,
+      college: { select: { id: true, name: true } },
+      department: { select: { id: true, name: true, code: true } },
+      trackAssignments: {
+        where: { isActive: true },
+        select: { track: { select: { id: true, name: true, slug: true } } },
+      },
+    } as const;
+
+    type Row = {
+      id: string;
+      type: 'LAB' | 'ASSIGNMENT';
+      status: string;
+      submittedAt: Date;
+      student: {
+        id: string;
+        email: string;
+        firstName: string;
+        lastName: string;
+        year: number | null;
+        college: { id: string; name: string } | null;
+        department: { id: string; name: string; code: string } | null;
+        trackAssignments: Array<{ track: { id: string; name: string; slug: string } }>;
+      };
+      track: { id: string; name: string; slug: string };
+      moduleTitle: string | null;
+      title: string;
+      passedTests?: number;
+      totalTests?: number;
+      code?: string;
+      content?: string | null;
+      feedback?: string | null;
+      score?: number | null;
+    };
+
+    const rows: Row[] = [];
+
+    if (type === 'all' || type === 'lab') {
+      const labWhere: Record<string, unknown> = { user: userWhere };
+      if (reviewStatuses) labWhere.status = { in: reviewStatuses };
+      if (trackId) {
+        labWhere.exercise = {
+          subsection: { chapter: { module: { trackId } } },
+        };
+      }
+
+      const labs = await this.prisma.exerciseSubmission.findMany({
+        where: labWhere,
+        include: {
+          user: { select: studentSelect },
+          exercise: {
+            select: {
+              title: true,
+              subsection: {
+                select: {
+                  title: true,
+                  chapter: {
+                    select: {
+                      title: true,
+                      module: {
+                        select: {
+                          title: true,
+                          track: { select: { id: true, name: true, slug: true } },
+                        },
+                      },
+                    },
+                  },
+                },
+              },
+            },
+          },
+        },
+        orderBy: { submittedAt: 'desc' },
+      });
+
+      for (const lab of labs) {
+        const track = lab.exercise.subsection.chapter.module.track;
+        rows.push({
+          id: lab.id,
+          type: 'LAB',
+          status: lab.status,
+          submittedAt: lab.submittedAt,
+          student: lab.user,
+          track,
+          moduleTitle: lab.exercise.subsection.chapter.module.title,
+          title: lab.exercise.title,
+          passedTests: lab.passedTests,
+          totalTests: lab.totalTests,
+          code: lab.code,
+          feedback: lab.feedback,
+        });
+      }
+    }
+
+    if (type === 'all' || type === 'assignment') {
+      const assignmentWhere: Record<string, unknown> = { user: userWhere };
+      if (reviewStatuses) assignmentWhere.status = { in: reviewStatuses };
+      if (trackId) assignmentWhere.assignment = { trackId };
+
+      const assignments = await this.prisma.assignmentSubmission.findMany({
+        where: assignmentWhere,
+        include: {
+          user: { select: studentSelect },
+          assignment: {
+            select: {
+              title: true,
+              track: { select: { id: true, name: true, slug: true } },
+              module: { select: { title: true } },
+            },
+          },
+        },
+        orderBy: { submittedAt: 'desc' },
+      });
+
+      for (const sub of assignments) {
+        rows.push({
+          id: sub.id,
+          type: 'ASSIGNMENT',
+          status: sub.status,
+          submittedAt: sub.submittedAt,
+          student: sub.user,
+          track: sub.assignment.track,
+          moduleTitle: sub.assignment.module?.title ?? null,
+          title: sub.assignment.title,
+          content: sub.content,
+          code: sub.code ?? undefined,
+          feedback: sub.feedback,
+          score: sub.score,
+        });
+      }
+    }
+
+    const order = sortOrder === 'asc' ? 1 : -1;
+    rows.sort((a, b) => {
+      switch (sortBy) {
+        case 'student':
+          return order * `${a.student.lastName}${a.student.firstName}`.localeCompare(`${b.student.lastName}${b.student.firstName}`);
+        case 'college':
+          return order * (a.student.college?.name || '').localeCompare(b.student.college?.name || '');
+        case 'year':
+          return order * ((a.student.year ?? 0) - (b.student.year ?? 0));
+        case 'track':
+          return order * a.track.name.localeCompare(b.track.name);
+        case 'title':
+          return order * a.title.localeCompare(b.title);
+        case 'status':
+          return order * a.status.localeCompare(b.status);
+        case 'submittedAt':
+        default:
+          return order * (a.submittedAt.getTime() - b.submittedAt.getTime());
+      }
+    });
+
+    const total = rows.length;
+    const start = (page - 1) * pageSize;
+    const items = rows.slice(start, start + pageSize).map((row) => ({
+      ...row,
+      submittedAt: row.submittedAt.toISOString(),
+      studentName: `${row.student.firstName} ${row.student.lastName}`,
+      collegeName: row.student.college?.name ?? 'Unassigned',
+      departmentName: row.student.department?.name ?? null,
+      year: row.student.year,
+      trackName: row.track.name,
+      activeTracks: row.student.trackAssignments.map((a) => a.track.name),
+    }));
+
+    const statusCounts = {
+      pending:
+        (await this.prisma.exerciseSubmission.count({
+          where: { status: { in: ['SUBMITTED', 'PENDING', 'RESUBMIT'] } },
+        })) +
+        (await this.prisma.assignmentSubmission.count({
+          where: { status: { in: ['SUBMITTED', 'PENDING', 'RESUBMIT'] } },
+        })),
+      approved:
+        (await this.prisma.exerciseSubmission.count({
+          where: { status: { in: ['APPROVED', 'GRADED'] } },
+        })) +
+        (await this.prisma.assignmentSubmission.count({
+          where: { status: { in: ['APPROVED', 'GRADED'] } },
+        })),
+      rejected:
+        (await this.prisma.exerciseSubmission.count({ where: { status: 'REJECTED' } })) +
+        (await this.prisma.assignmentSubmission.count({ where: { status: 'REJECTED' } })),
+    };
+
+    return {
+      items,
+      pagination: {
+        page,
+        pageSize,
+        total,
+        totalPages: Math.ceil(total / pageSize) || 1,
+      },
+      statusCounts,
+    };
+  }
+
+  async reviewSubmission(
+    type: 'lab' | 'assignment',
+    submissionId: string,
+    reviewerId: string,
+    body: { action: 'approve' | 'reject'; feedback?: string; score?: number },
+  ) {
+    const { action, feedback, score } = body;
+    if (action === 'reject' && !feedback?.trim()) {
+      throw new BadRequestException('Feedback is required when rejecting a submission');
+    }
+
+    if (type === 'lab') {
+      const submission = await this.prisma.exerciseSubmission.findUnique({
+        where: { id: submissionId },
+        include: {
+          exercise: {
+            select: {
+              id: true,
+              xpReward: true,
+              subsectionId: true,
+              subsection: { select: { chapter: { select: { module: { select: { trackId: true } } } } } },
+            },
+          },
+        },
+      });
+      if (!submission) throw new NotFoundException('Lab submission not found');
+
+      if (action === 'approve') {
+        await this.prisma.exerciseSubmission.update({
+          where: { id: submissionId },
+          data: {
+            status: 'APPROVED',
+            feedback: feedback?.trim() || null,
+            reviewedAt: new Date(),
+            reviewedById: reviewerId,
+          },
+        });
+
+        await this.gamification.awardXP(
+          submission.userId,
+          submission.exercise.xpReward,
+          'coding_exercise',
+          submission.exercise.id,
+        );
+        await this.prisma.progressRecord.upsert({
+          where: { userId_subsectionId: { userId: submission.userId, subsectionId: submission.exercise.subsectionId } },
+          create: {
+            userId: submission.userId,
+            subsectionId: submission.exercise.subsectionId,
+            trackId: submission.exercise.subsection.chapter.module.trackId,
+            isCompleted: true,
+            completedAt: new Date(),
+          },
+          update: { isCompleted: true, completedAt: new Date() },
+        });
+
+        return { success: true, status: 'APPROVED' };
+      }
+
+      await this.prisma.exerciseSubmission.update({
+        where: { id: submissionId },
+        data: {
+          status: 'REJECTED',
+          feedback: feedback!.trim(),
+          reviewedAt: new Date(),
+          reviewedById: reviewerId,
+        },
+      });
+      return { success: true, status: 'REJECTED' };
+    }
+
+    const submission = await this.prisma.assignmentSubmission.findUnique({
+      where: { id: submissionId },
+    });
+    if (!submission) throw new NotFoundException('Assignment submission not found');
+
+    if (action === 'approve') {
+      await this.prisma.assignmentSubmission.update({
+        where: { id: submissionId },
+        data: {
+          status: 'APPROVED',
+          score: score ?? submission.score ?? 100,
+          feedback: feedback?.trim() || null,
+          gradedAt: new Date(),
+        },
+      });
+      return { success: true, status: 'APPROVED' };
+    }
+
+    await this.prisma.assignmentSubmission.update({
+      where: { id: submissionId },
+      data: {
+        status: 'REJECTED',
+        feedback: feedback!.trim(),
+        gradedAt: new Date(),
+      },
+    });
+    return { success: true, status: 'REJECTED' };
   }
 }

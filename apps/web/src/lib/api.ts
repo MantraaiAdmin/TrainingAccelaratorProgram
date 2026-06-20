@@ -379,6 +379,44 @@ class ApiClient {
     return this.fetch(`/admin/commissions/college/${collegeId}`, { method: 'PUT', body: JSON.stringify(data) });
   }
 
+  getAdminSubmissions(params: {
+    page?: number;
+    pageSize?: number;
+    search?: string;
+    sortBy?: string;
+    sortOrder?: 'asc' | 'desc';
+    collegeId?: string;
+    year?: number;
+    trackId?: string;
+    status?: 'pending' | 'approved' | 'rejected' | 'all';
+    type?: 'lab' | 'assignment' | 'all';
+  } = {}) {
+    const q = new URLSearchParams();
+    if (params.page) q.set('page', String(params.page));
+    if (params.pageSize) q.set('pageSize', String(params.pageSize));
+    if (params.search) q.set('search', params.search);
+    if (params.sortBy) q.set('sortBy', params.sortBy);
+    if (params.sortOrder) q.set('sortOrder', params.sortOrder);
+    if (params.collegeId) q.set('collegeId', params.collegeId);
+    if (params.year) q.set('year', String(params.year));
+    if (params.trackId) q.set('trackId', params.trackId);
+    if (params.status) q.set('status', params.status);
+    if (params.type) q.set('type', params.type);
+    const qs = q.toString();
+    return this.fetch(`/admin/submissions${qs ? `?${qs}` : ''}`);
+  }
+
+  reviewSubmission(
+    type: 'lab' | 'assignment',
+    id: string,
+    data: { action: 'approve' | 'reject'; feedback?: string; score?: number },
+  ) {
+    return this.fetch(`/admin/submissions/${type}/${id}/review`, {
+      method: 'PUT',
+      body: JSON.stringify(data),
+    });
+  }
+
   // Certificates
   getCertificates() {
     return this.fetch('/certificates/my');

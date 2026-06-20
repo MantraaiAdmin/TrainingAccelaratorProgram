@@ -74,7 +74,11 @@ export function CodeEditor({
         error?: string;
       };
       if (result.testResults) setTestResults(result.testResults);
-      if (result.success) {
+      const pendingReview = (result as { pendingReview?: boolean }).pendingReview;
+      const message = (result as { message?: string }).message;
+      if (pendingReview) {
+        setOutput(message || '📤 Submitted for admin review.');
+      } else if (result.success) {
         setOutput(`✅ All ${result.total} tests passed!`);
       } else {
         setError(`❌ ${result.passed}/${result.total} tests passed`);

@@ -330,19 +330,23 @@ model CodingExercise {
 }
 
 model ExerciseSubmission {
-  id          String         @id @default(uuid())
-  userId      String
-  exerciseId  String
-  code        String         @db.Text
-  status      SubmissionStatus @default(SUBMITTED)
-  passedTests Int            @default(0)
-  totalTests  Int            @default(0)
-  executionMs Int?
-  submittedAt DateTime       @default(now())
-  user        User           @relation(fields: [userId], references: [id], onDelete: Cascade)
-  exercise    CodingExercise @relation(fields: [exerciseId], references: [id], onDelete: Cascade)
+  id           String           @id @default(uuid())
+  userId       String
+  exerciseId   String
+  code         String           @db.Text
+  status       SubmissionStatus @default(SUBMITTED)
+  passedTests  Int              @default(0)
+  totalTests   Int              @default(0)
+  executionMs  Int?
+  feedback     String?          @db.Text
+  reviewedAt   DateTime?
+  reviewedById String?
+  submittedAt  DateTime         @default(now())
+  user         User             @relation(fields: [userId], references: [id], onDelete: Cascade)
+  exercise     CodingExercise   @relation(fields: [exerciseId], references: [id], onDelete: Cascade)
 
   @@index([userId, exerciseId])
+  @@index([status, submittedAt])
 }
 
 model Quiz {
