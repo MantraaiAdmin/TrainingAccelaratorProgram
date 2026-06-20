@@ -1,5 +1,6 @@
 'use client';
 
+import Image from 'next/image';
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { motion } from 'framer-motion';
@@ -8,7 +9,7 @@ import { api } from '@/lib/api';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { Sparkles, Mail, Lock, Eye, EyeOff } from 'lucide-react';
+import { Mail, Lock, Eye, EyeOff } from 'lucide-react';
 import { toast } from 'sonner';
 import { BRAND } from '@/lib/branding';
 
@@ -53,9 +54,14 @@ export default function LoginPage() {
         <div className="relative z-10 flex flex-col justify-center px-16 text-white">
           <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.6 }}>
             <div className="flex items-center gap-3 mb-8">
-              <div className="w-12 h-12 rounded-xl bg-white/20 backdrop-blur flex items-center justify-center">
-                <Sparkles className="w-6 h-6" />
-              </div>
+              <Image
+                src="/mantra-ai-icon.png"
+                alt=""
+                width={48}
+                height={48}
+                className="w-12 h-12 rounded-xl"
+                priority
+              />
               <div>
                 <h1 className="text-2xl font-bold">{BRAND.name}</h1>
                 <p className="text-white/70 text-sm">{BRAND.tagline}</p>

@@ -1,12 +1,13 @@
 'use client';
 
+import Image from 'next/image';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { useAuthStore, useThemeStore, useSidebarStore } from '@/lib/store';
 import { cn } from '@/lib/utils';
 import {
   LayoutDashboard, BookOpen, Trophy, Award, LogOut,
-  Moon, Sun, Menu, X, Shield, Sparkles, Users, TrendingUp, Layers, Percent,
+  Moon, Sun, Menu, X, Shield, Users, TrendingUp, Layers, Percent,
   ChevronLeft, ChevronRight, UserCog, ClipboardCheck,
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
@@ -85,9 +86,14 @@ function SidebarPanel({
             className={cn('flex items-center gap-3 min-w-0', collapsed && 'justify-center')}
             title={collapsed ? BRAND.name : undefined}
           >
-            <div className="w-10 h-10 rounded-xl gradient-bg flex items-center justify-center shrink-0">
-              <Sparkles className="w-5 h-5 text-white" />
-            </div>
+            <Image
+              src="/mantra-ai-icon.png"
+              alt=""
+              width={40}
+              height={40}
+              className="w-10 h-10 rounded-xl shrink-0"
+              priority
+            />
             {!collapsed && (
               <div className="min-w-0">
                 <h1 className="font-bold text-sm gradient-text leading-tight">{BRAND.name}</h1>

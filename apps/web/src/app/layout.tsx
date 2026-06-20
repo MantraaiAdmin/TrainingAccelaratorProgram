@@ -6,6 +6,10 @@ import './globals.css';
 export const metadata: Metadata = {
   title: `${APP_CONFIG.name} - Internship Learning Platform`,
   description: `${APP_CONFIG.tagline} Powered by ${APP_CONFIG.name}.`,
+  icons: {
+    icon: '/favicon.png',
+    apple: '/apple-touch-icon.png',
+  },
 };
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {

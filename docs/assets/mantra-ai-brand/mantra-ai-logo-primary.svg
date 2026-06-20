@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- Mantra.ai primary logo  horizontal lockup (icon + wordmark) -->
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 420 80" role="img" aria-label="Mantra.ai">
+  <title>Mantra.ai Primary Logo</title>
+  <g color="#0F172A">
+    <!-- Icon mark -->
+    <g transform="translate(4,8) scale(1)">
+      <path
+        fill="none"
+        stroke="currentColor"
+        stroke-width="4.2"
+        stroke-linecap="round"
+        stroke-linejoin="round"
+        d="M10 18
+           L22 46
+           C26 54 30 54 32 46
+           C34 38 38 38 42 46
+           L54 18
+           M22 46
+           C18 58 14 62 10 58
+           C6 54 8 48 14 44
+           M42 46
+           C46 58 50 62 54 58
+           C58 54 56 48 50 44"
+      />
+    </g>
+    <!-- Wordmark  replace font-family in design tools if needed -->
+    <text
+      x="88"
+      y="52"
+      fill="currentColor"
+      font-family="Inter, 'Segoe UI', system-ui, -apple-system, sans-serif"
+      font-size="34"
+      font-weight="600"
+      letter-spacing="-0.5"
+    >Mantra.ai</text>
+  </g>
+</svg>

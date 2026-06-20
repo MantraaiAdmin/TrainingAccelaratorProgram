@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- Mantra.ai logo mark  editable vector (M + infinity flow) -->
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" role="img" aria-label="Mantra.ai mark">
+  <title>Mantra.ai Icon</title>
+  <path
+    fill="none"
+    stroke="currentColor"
+    stroke-width="4.2"
+    stroke-linecap="round"
+    stroke-linejoin="round"
+    d="M10 18
+       L22 46
+       C26 54 30 54 32 46
+       C34 38 38 38 42 46
+       L54 18
+       M22 46
+       C18 58 14 62 10 58
+       C6 54 8 48 14 44
+       M42 46
+       C46 58 50 62 54 58
+       C58 54 56 48 50 44"
+  />
+</svg>

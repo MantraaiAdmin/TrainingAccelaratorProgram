@@ -11,7 +11,7 @@ from pptx.util import Inches, Pt
 
 ROOT = Path(__file__).resolve().parents[1]
 OUTPUT = ROOT / "docs" / "AI_NextGen_Industry_Readiness_Pitch.pptx"
-LOGO = ROOT / "docs" / "assets" / "constel-logo.png"
+LOGO = ROOT / "docs" / "assets" / "mantra-ai-brand" / "mantra-ai-favicon.png"
 
 NAVY = RGBColor(0x0B, 0x1A, 0x3A)
 NAVY_MID = RGBColor(0x15, 0x2A, 0x52)
