@@ -6,6 +6,7 @@ import { useRouter } from 'next/navigation';
 import { motion } from 'framer-motion';
 import { useAuthStore } from '@/lib/store';
 import { api } from '@/lib/api';
+import { establishServerSession } from '@/lib/auth-session';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
@@ -27,21 +28,18 @@ export default function LoginPage() {
     router.prefetch('/admin');
   }, [router]);
 
-  const clearAutofill = (event: React.FocusEvent<HTMLInputElement>) => {
-    event.target.removeAttribute('readonly');
-  };
-
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsLoading(true);
     try {
       const result = await api.login(email, password);
       setAuth(result.user as never, result.accessToken, result.refreshToken);
+      await establishServerSession();
       const user = result.user as { role: string };
       const destination =
         user.role === 'ADMIN' || user.role === 'SUPER_ADMIN' ? '/admin' : '/dashboard';
-      // Full navigation so middleware receives the session cookie immediately.
       window.location.assign(destination);
+      return;
     } catch (err) {
       const message = (err as Error).message || 'Login failed';
       if (message.toLowerCase().includes('invalid credentials')) {
@@ -117,8 +115,6 @@ export default function LoginPage() {
                       type="email"
                       value={email}
                       onChange={(e) => setEmail(e.target.value)}
-                      onFocus={clearAutofill}
-                      readOnly
                       className="pl-10"
                       placeholder="you@college.edu"
                       autoComplete="off"
@@ -143,8 +139,6 @@ export default function LoginPage() {
                       type={showPassword ? 'text' : 'password'}
                       value={password}
                       onChange={(e) => setPassword(e.target.value)}
-                      onFocus={clearAutofill}
-                      readOnly
                       className="pl-10 pr-10"
                       placeholder="Enter your password"
                       autoComplete="new-password"

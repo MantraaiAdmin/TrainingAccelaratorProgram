@@ -1,6 +1,7 @@
 import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
 import { useEffect, useState } from 'react';
+import { clearServerSession, establishServerSession } from '@/lib/auth-session';
 
 interface User {
   id: string;
@@ -24,6 +25,7 @@ interface AuthState {
 }
 
 const AUTH_COOKIE = 'mantra-auth';
+const AUTH_STORAGE_KEY = 'constel-auth';
 
 function setAuthCookie() {
   if (typeof document === 'undefined') return;
@@ -36,6 +38,22 @@ function clearAuthCookie() {
   document.cookie = `${AUTH_COOKIE}=; path=/; max-age=0; SameSite=Lax`;
 }
 
+function persistAuthSnapshot(snapshot: {
+  user: User | null;
+  accessToken: string | null;
+  refreshToken: string | null;
+  isAuthenticated: boolean;
+}) {
+  if (typeof window === 'undefined') return;
+  localStorage.setItem(
+    AUTH_STORAGE_KEY,
+    JSON.stringify({
+      state: snapshot,
+      version: 0,
+    }),
+  );
+}
+
 export const useAuthStore = create<AuthState>()(
   persist(
     (set) => ({
@@ -44,18 +62,27 @@ export const useAuthStore = create<AuthState>()(
       refreshToken: null,
       isAuthenticated: false,
       setAuth: (user, accessToken, refreshToken) => {
+        const snapshot = { user, accessToken, refreshToken, isAuthenticated: true };
         if (typeof window !== 'undefined') {
           localStorage.setItem('accessToken', accessToken);
           localStorage.setItem('refreshToken', refreshToken);
           setAuthCookie();
+          persistAuthSnapshot(snapshot);
         }
-        set({ user, accessToken, refreshToken, isAuthenticated: true });
+        set(snapshot);
       },
       logout: () => {
         if (typeof window !== 'undefined') {
           localStorage.removeItem('accessToken');
           localStorage.removeItem('refreshToken');
           clearAuthCookie();
+          persistAuthSnapshot({
+            user: null,
+            accessToken: null,
+            refreshToken: null,
+            isAuthenticated: false,
+          });
+          void clearServerSession();
         }
         set({ user: null, accessToken: null, refreshToken: null, isAuthenticated: false });
       },
@@ -65,6 +92,7 @@ export const useAuthStore = create<AuthState>()(
       onRehydrateStorage: () => (state) => {
         if (state?.isAuthenticated && state.accessToken) {
           setAuthCookie();
+          void establishServerSession().catch(() => {});
         }
       },
     },
