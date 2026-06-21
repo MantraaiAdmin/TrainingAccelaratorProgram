@@ -2,22 +2,24 @@
 
 import { useEffect } from 'react';
 import { useRouter } from 'next/navigation';
-import { useAuthStore } from '@/lib/store';
+import { useAuthReady, useAuthStore } from '@/lib/store';
 
 export default function AdminLayout({ children }: { children: React.ReactNode }) {
+  const authReady = useAuthReady();
   const { user, isAuthenticated } = useAuthStore();
   const router = useRouter();
 
   useEffect(() => {
+    if (!authReady) return;
     if (!isAuthenticated) {
       router.replace('/login');
       return;
     }
     const isAdmin = user?.role === 'ADMIN' || user?.role === 'SUPER_ADMIN';
     if (!isAdmin) router.replace('/dashboard');
-  }, [isAuthenticated, user, router]);
+  }, [authReady, isAuthenticated, user, router]);
 
-  if (!isAuthenticated) return null;
+  if (!authReady || !isAuthenticated) return null;
   if (user?.role !== 'ADMIN' && user?.role !== 'SUPER_ADMIN') return null;
 
   return <>{children}</>;

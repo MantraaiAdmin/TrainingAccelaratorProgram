@@ -1,5 +1,6 @@
 import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
+import { useEffect, useState } from 'react';
 
 interface User {
   id: string;
@@ -26,7 +27,8 @@ const AUTH_COOKIE = 'mantra-auth';
 
 function setAuthCookie() {
   if (typeof document === 'undefined') return;
-  document.cookie = `${AUTH_COOKIE}=1; path=/; max-age=${60 * 60 * 24 * 7}; SameSite=Lax`;
+  const secure = window.location.protocol === 'https:' ? '; Secure' : '';
+  document.cookie = `${AUTH_COOKIE}=1; path=/; max-age=${60 * 60 * 24 * 7}; SameSite=Lax${secure}`;
 }
 
 function clearAuthCookie() {
@@ -61,11 +63,30 @@ export const useAuthStore = create<AuthState>()(
     {
       name: 'constel-auth',
       onRehydrateStorage: () => (state) => {
-        if (state?.isAuthenticated && state.accessToken) setAuthCookie();
+        if (state?.isAuthenticated && state.accessToken) {
+          setAuthCookie();
+        }
       },
     },
   ),
 );
+
+/** Wait for persisted auth state before routing decisions (avoids false /login redirects). */
+export function useAuthReady() {
+  const [ready, setReady] = useState(
+    () => typeof window !== 'undefined' && useAuthStore.persist.hasHydrated(),
+  );
+
+  useEffect(() => {
+    if (useAuthStore.persist.hasHydrated()) {
+      setReady(true);
+      return;
+    }
+    return useAuthStore.persist.onFinishHydration(() => setReady(true));
+  }, []);
+
+  return ready;
+}
 
 interface AIState {
   isOpen: boolean;

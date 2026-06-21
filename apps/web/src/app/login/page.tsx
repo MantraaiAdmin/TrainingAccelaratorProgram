@@ -37,9 +37,11 @@ export default function LoginPage() {
     try {
       const result = await api.login(email, password);
       setAuth(result.user as never, result.accessToken, result.refreshToken);
-      toast.success('Welcome back!');
       const user = result.user as { role: string };
-      router.push(user.role === 'ADMIN' || user.role === 'SUPER_ADMIN' ? '/admin' : '/dashboard');
+      const destination =
+        user.role === 'ADMIN' || user.role === 'SUPER_ADMIN' ? '/admin' : '/dashboard';
+      // Full navigation so middleware receives the session cookie immediately.
+      window.location.assign(destination);
     } catch (err) {
       const message = (err as Error).message || 'Login failed';
       if (message.toLowerCase().includes('invalid credentials')) {
