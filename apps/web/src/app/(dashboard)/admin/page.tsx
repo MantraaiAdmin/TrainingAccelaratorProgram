@@ -155,7 +155,7 @@ export default function AdminDashboardPage() {
         </CardHeader>
         <CardContent>
           <p className="text-sm text-muted-foreground mb-4">
-            Preview internship certificate, LoR, hackathon certificate, and paid internship
+            Preview internship certificate, LoR, hackathon certificate, and company internship
             completion letter for college demos.
           </p>
           <Link

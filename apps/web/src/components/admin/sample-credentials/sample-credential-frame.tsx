@@ -1,8 +1,9 @@
 'use client';
 
 import { ReactNode, useRef } from 'react';
-import { Sparkles } from 'lucide-react';
+import Image from 'next/image';
 import { BRAND } from '@/lib/branding';
+import { CERT_SIGNATORY, downloadCertificateDocument } from '@/lib/certificate-template';
 
 const NAVY = '#0B1A3A';
 const CYAN = '#0891B2';
@@ -18,7 +19,7 @@ interface SampleCredentialFrameProps {
   meta: SampleMeta;
   children: ReactNode;
   variant?: 'certificate' | 'letter';
-  onPrint?: () => void;
+  bodyHtmlForDownload?: string;
 }
 
 export function SampleCredentialFrame({
@@ -27,6 +28,7 @@ export function SampleCredentialFrame({
   meta,
   children,
   variant = 'certificate',
+  bodyHtmlForDownload,
 }: SampleCredentialFrameProps) {
   const ref = useRef<HTMLDivElement>(null);
 
@@ -51,6 +53,20 @@ export function SampleCredentialFrame({
     }, 400);
   };
 
+  const handleDownload = async () => {
+    if (!bodyHtmlForDownload) return;
+    await downloadCertificateDocument({
+      title,
+      subtitle,
+      bodyHtml: bodyHtmlForDownload,
+      credentialId: meta.credentialId,
+      issueDate: meta.issueDate,
+      variant,
+      signatoryName: CERT_SIGNATORY.name,
+      signatoryTitle: CERT_SIGNATORY.title,
+    });
+  };
+
   return (
     <div className="space-y-3">
       <div
@@ -63,7 +79,6 @@ export function SampleCredentialFrame({
           border: `3px solid ${NAVY}`,
         }}
       >
-        {/* Corner accents */}
         <div className="absolute top-0 left-0 w-16 h-16 border-l-4 border-t-4 border-cyan-500" />
         <div className="absolute top-0 right-0 w-16 h-16 border-r-4 border-t-4 border-cyan-500" />
         <div className="absolute bottom-0 left-0 w-16 h-16 border-l-4 border-b-4 border-cyan-500" />
@@ -72,15 +87,19 @@ export function SampleCredentialFrame({
         <div className="px-8 py-8 md:px-12 md:py-10">
           <div className="flex items-center justify-between gap-4 border-b border-slate-200 pb-5 mb-6">
             <div className="flex items-center gap-3">
-              <div className="w-14 h-14 rounded-xl gradient-bg flex items-center justify-center shrink-0">
-                <Sparkles className="w-7 h-7 text-white" />
-              </div>
+              <Image
+                src="/mantra-ai-icon.png"
+                alt={BRAND.name}
+                width={56}
+                height={56}
+                className="w-14 h-14 rounded-xl shrink-0"
+              />
               <div>
                 <p className="text-xs font-semibold tracking-widest uppercase" style={{ color: CYAN }}>
                   {BRAND.name}
                 </p>
                 <p className="text-sm font-bold" style={{ color: NAVY }}>
-                  Industry Readiness Internship Program
+                  {BRAND.programName}
                 </p>
               </div>
             </div>
@@ -104,19 +123,30 @@ export function SampleCredentialFrame({
           {children}
 
           <div className="mt-8 pt-4 border-t border-slate-200 flex flex-wrap items-end justify-between gap-4 text-xs text-slate-500">
-            <p>Verify at program portal · QR-enabled credentials</p>
+            <p>{BRAND.name} · Verify at program portal</p>
             <p className="font-mono sm:hidden">{meta.credentialId}</p>
           </div>
         </div>
       </div>
 
-      <button
-        type="button"
-        onClick={handlePrint}
-        className="w-full max-w-[820px] mx-auto block py-2 text-sm rounded-md border border-cyan-600 text-cyan-700 hover:bg-cyan-50 transition-colors"
-      >
-        Print / Save as PDF
-      </button>
+      <div className="flex flex-col sm:flex-row gap-2 max-w-[820px] mx-auto">
+        {bodyHtmlForDownload && (
+          <button
+            type="button"
+            onClick={handleDownload}
+            className="flex-1 py-2 text-sm rounded-md border border-cyan-600 bg-cyan-600 text-white hover:bg-cyan-700 transition-colors"
+          >
+            Download Certificate
+          </button>
+        )}
+        <button
+          type="button"
+          onClick={handlePrint}
+          className="flex-1 py-2 text-sm rounded-md border border-cyan-600 text-cyan-700 hover:bg-cyan-50 transition-colors"
+        >
+          Print / Save as PDF
+        </button>
+      </div>
     </div>
   );
 }
@@ -150,3 +180,5 @@ export function SignatureBlock({ name, title }: { name: string; title: string })
     </div>
   );
 }
+
+export { CERT_SIGNATORY };

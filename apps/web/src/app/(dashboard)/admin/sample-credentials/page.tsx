@@ -30,9 +30,9 @@ const TABS = [
   },
   {
     id: 'paid-internship',
-    label: 'Paid Internship',
+    label: 'Company Internship',
     icon: Briefcase,
-    description: 'Company-issued certificate for paid internship completion',
+    description: 'Mantra.ai certificate for top-performer internship completion',
   },
 ] as const;
 
@@ -90,7 +90,7 @@ export default function AdminSampleCredentialsPage() {
       </Card>
 
       <p className="text-xs text-muted-foreground text-center">
-        Sample data: Priya Sharma · SRM Institute · AI NextGen Industry Readiness Internship Program
+        Sample data: Priya Sharma · SRM Institute · Mantra.ai Internship Program
       </p>
     </div>
   );

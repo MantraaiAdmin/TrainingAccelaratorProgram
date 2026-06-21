@@ -58,7 +58,7 @@ def build() -> None:
     sub = doc.add_paragraph()
     sub.alignment = WD_ALIGN_PARAGRAPH.CENTER
     s_run = sub.add_run(
-        "Industry-Partnered Internship Program — Constel AI NextGen\n"
+        "Industry-Partnered Internship Program — Mantra.ai\n"
         "Mantra AI Talent Accelerator Internship Program"
     )
     s_run.font.size = Pt(11)
@@ -76,10 +76,8 @@ def build() -> None:
     add_para(doc, "BETWEEN", bold=True)
     add_para(
         doc,
-        "Constel Global India Pvt. Ltd., a company incorporated under the Companies Act, 2013, "
-        "having its registered office at ________________________________________________, "
-        "represented by Mr. Praveen Manoharan, CTO & Technical Program Manager "
-        "(hereinafter “Constel” or the “Service Provider”)",
+        "Mantra.ai, represented by Mr. Praveen Manoharan, CTO & Technical Program Manager "
+        "(hereinafter “Mantra.ai” or the “Service Provider”)",
     )
     doc.add_paragraph()
     add_para(doc, "AND", bold=True)
@@ -93,11 +91,11 @@ def build() -> None:
     doc.add_paragraph()
     add_para(
         doc,
-        "Constel and the College are individually a “Party” and collectively the “Parties”.",
+        "Mantra.ai and the College are individually a “Party” and collectively the “Parties”.",
     )
 
     add_heading(doc, "1. PURPOSE AND BACKGROUND", 2)
-    add_bullet(doc, "Constel operates Constel AI NextGen (Mantra.ai), an internship learning platform for engineering colleges.")
+    add_bullet(doc, "Mantra.ai operates an internship learning platform for engineering colleges.")
     add_bullet(doc, "The College seeks industry-aligned internship learning for student employability.")
     add_bullet(
         doc,
@@ -108,22 +106,22 @@ def build() -> None:
     table = doc.add_table(rows=6, cols=2)
     table.style = "Table Grid"
     rows_data = [
-        ("Program", "Mantra AI Talent Accelerator via Constel AI NextGen"),
+        ("Program", "Mantra AI Talent Accelerator via Mantra.ai"),
         ("Track", "Foundation Track: Python, Data & AI"),
         ("Course Fee", "₹3,999 per Student per enrollment"),
         ("Student", "Bonafide 2nd–4th year student (CSE, IT, ECE, AI/ML, MCA or as agreed)"),
-        ("Platform", "Constel AI NextGen web app and admin portal"),
+        ("Platform", "Mantra.ai web app and admin portal"),
     ]
     for i, (k, v) in enumerate(rows_data):
         table.rows[i].cells[0].text = k
         table.rows[i].cells[1].text = v
 
     add_heading(doc, "3. SCOPE", 2)
-    add_bullet(doc, "Constel provides Platform access and Track delivery.")
+    add_bullet(doc, "Mantra.ai provides Platform access and Track delivery.")
     add_bullet(doc, "College promotes Program, facilitates enrollment, and nominates TPO + faculty liaison.")
     add_bullet(
         doc,
-        "Joint branding: “Hindusthan College of Engineering and Technology × Constel AI NextGen Industry Internship Lab”",
+        "Joint branding: “Hindusthan College of Engineering and Technology × Mantra.ai Industry Internship Lab”",
     )
 
     add_heading(doc, "4. PROGRAM — FOUNDATION TRACK: PYTHON, DATA & AI", 2)
@@ -144,15 +142,15 @@ def build() -> None:
         "Interview prep modules per week",
         "Mini projects + capstone + GitHub portfolio",
         "XP, leaderboard, QR-verified certificate",
-        "Constel Hackathon access",
+        "Mantra.ai Hackathon access",
         "Merit-based LoR eligibility",
-        "Top 5%: paid internship pathway (₹5,000–10,000/month stipend, performance-based)",
+        "Top 5%: internship pathway (performance-based)",
     ]
     for d in deliverables:
         add_bullet(doc, d)
 
     add_heading(doc, "5. ROLES AND RESPONSIBILITIES", 2)
-    add_para(doc, "Constel shall:", bold=True)
+    add_para(doc, "Mantra.ai shall:", bold=True)
     for item in [
         "Host Platform; provide curriculum updates",
         "Weekly live sessions + recordings",
@@ -176,14 +174,14 @@ def build() -> None:
     add_heading(doc, "5.3 OFFICIAL COMMUNICATION CHANNEL", 2)
     add_para(
         doc,
-        "Constel shall designate one official company email ID as the sole primary communication "
+        "Mantra.ai shall designate one official company email ID as the sole primary communication "
         "channel for all Program-related operational correspondence with the College (enrollment "
         "support, analytics, mentor sessions, grievance handling, and admin coordination).",
     )
-    add_para(doc, "Constel official communication email: _________________________________ @constelglobal.com", bold=True)
+    add_para(doc, "Mantra.ai official communication email: _________________________________ @mantra.ai", bold=True)
     add_para(
         doc,
-        "The College Coordinator (TPO/Internship Coordinator) shall use this Constel official email "
+        "The College Coordinator (TPO/Internship Coordinator) shall use this Mantra.ai official email "
         "for all routine Program communication and shall provide their official College email ID "
         "(as stated above) for formal notices under this MoU.",
     )
@@ -203,13 +201,13 @@ def build() -> None:
     fin_table.rows[0].cells[1].text = "Amount (per enrollment)"
     fin_table.rows[1].cells[0].text = "College share (30%)"
     fin_table.rows[1].cells[1].text = "₹1,200"
-    fin_table.rows[2].cells[0].text = "Constel share (70%)"
+    fin_table.rows[2].cells[0].text = "Mantra.ai share (70%)"
     fin_table.rows[2].cells[1].text = "₹2,799"
 
     doc.add_paragraph()
     add_para(
         doc,
-        "Payment: Students pay Constel directly (Option A) OR College collects and remits (Option B). "
+        "Payment: Students pay Mantra.ai directly (Option A) OR College collects and remits (Option B). "
         "Settlement within 15 business days after month-end. GST as per law. "
         "Refund within 7 days pre-Week 1 on case-by-case basis.",
     )
@@ -231,12 +229,12 @@ def build() -> None:
             timeline.rows[i].cells[j].text = val
 
     add_heading(doc, "8–15. IP, DATA, CONFIDENTIALITY, TERM, LIABILITY, DISPUTES", 2)
-    add_bullet(doc, "Curriculum and Platform IP remain with Constel; students own their code/projects.")
+    add_bullet(doc, "Curriculum and Platform IP remain with Mantra.ai; students own their code/projects.")
     add_bullet(doc, "Student data used only for delivery, analytics, certification, placement support.")
     add_bullet(doc, "Term: 12 months, auto-renewable; 30-day notice for non-renewal.")
     add_bullet(doc, "Confidentiality survives 3 years.")
     add_bullet(doc, "Arbitration in Coimbatore under Arbitration and Conciliation Act, 1996.")
-    add_bullet(doc, "Placement/paid internship not guaranteed; merit-based pathways only.")
+    add_bullet(doc, "Placement/internship not guaranteed; merit-based pathways only.")
 
     add_heading(doc, "16. CONTACT PERSONS", 2)
     contacts = doc.add_table(rows=5, cols=4)
@@ -246,8 +244,8 @@ def build() -> None:
     contacts.rows[0].cells[2].text = "Email"
     contacts.rows[0].cells[3].text = "Phone"
     contact_rows = [
-        ("Constel", "Praveen Manoharan, CTO & TPM", "praveen.manoharan@constelglobal.com", "+91 8760 8760 62"),
-        ("Constel", "Official communication (Company)", "_________________ @constelglobal.com", "—"),
+        ("Mantra.ai", "Praveen Manoharan, CTO & TPM", "praveen.manoharan@mantra.ai", "+91 8760 8760 62"),
+        ("Mantra.ai", "Official communication (Company)", "_________________ @mantra.ai", "—"),
         ("College", "Dr. J. Jaya, Principal", "principal@hicet.ac.in", "0422-4242424"),
         ("College", "TPO / Internship Coordinator", "_________________ @hicet.ac.in", "_________________"),
     ]
@@ -257,7 +255,7 @@ def build() -> None:
 
     add_heading(doc, "17. SIGNATURES", 2)
     doc.add_paragraph()
-    add_para(doc, "FOR CONSTEL GLOBAL INDIA PVT. LTD.")
+    add_para(doc, "FOR AND ON BEHALF OF MANTRA.AI")
     add_para(doc, "Name: Mr. Praveen Manoharan")
     add_para(doc, "Designation: CTO & Technical Program Manager")
     add_para(doc, "Signature: _________________________    Date: _________________________")
@@ -279,7 +277,7 @@ def build() -> None:
         ("Payment option", "Option A / Option B"),
         ("TPO champion", "Name: __________ Email: __________ @hicet.ac.in"),
         ("Faculty liaison", "Name: __________ Email: __________"),
-        ("Constel official communication email", "__________ @constelglobal.com (Clause 5.3)"),
+        ("Mantra.ai official communication email", "__________ @mantra.ai (Clause 5.3)"),
     ]
     for i, (k, v) in enumerate(annex_data):
         annex.rows[i].cells[0].text = k
@@ -289,7 +287,7 @@ def build() -> None:
     footer = doc.add_paragraph()
     footer.alignment = WD_ALIGN_PARAGRAPH.CENTER
     f_run = footer.add_run(
-        "Proprietary — Constel Global India Pvt. Ltd. · Draft MoU · June 2026"
+        "Proprietary — Mantra.ai · Draft MoU · June 2026"
     )
     f_run.font.size = Pt(9)
     f_run.font.name = "Calibri"

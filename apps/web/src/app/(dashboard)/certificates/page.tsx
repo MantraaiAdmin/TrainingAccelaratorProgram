@@ -59,16 +59,21 @@ export default function CertificatesPage() {
                 <Button
                   variant="outline"
                   className="w-full"
-                  onClick={() =>
-                    downloadCertificateHtml({
-                      certificateId: cert.certificateId,
-                      studentName: cert.studentName,
-                      trackName: cert.trackName,
-                      programName: BRAND.programName,
-                      issuedAt: cert.issuedAt,
-                      qrCodeData: cert.qrCodeData,
-                    })
-                  }
+                  onClick={async () => {
+                    try {
+                      await downloadCertificateHtml({
+                        certificateId: cert.certificateId,
+                        studentName: cert.studentName,
+                        trackName: cert.trackName,
+                        programName: BRAND.programName,
+                        issuedAt: cert.issuedAt,
+                        qrCodeData: cert.qrCodeData,
+                      });
+                      toast.success('Certificate downloaded');
+                    } catch {
+                      toast.error('Could not download certificate');
+                    }
+                  }}
                 >
                   <Download className="w-4 h-4 mr-2" /> Download Certificate
                 </Button>
