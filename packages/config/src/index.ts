@@ -1,7 +1,7 @@
 export const APP_CONFIG = {
   name: 'Mantra.ai',
   company: 'Mantra.ai',
-  programName: 'Mantra.ai Internship Program',
+  programName: 'Mantra AI Talent Accelerator Internship Program',
   tagline: 'Learn smarter. Build faster. Ship with confidence.',
   aiAssistantName: 'Mantra AI Tutor',
   aiTagline: 'Your 24/7 learning companion — syllabus-focused guidance from first concept to production-ready code.',

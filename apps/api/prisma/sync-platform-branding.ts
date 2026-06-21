@@ -26,7 +26,7 @@ async function main() {
       data: {
         title: 'Welcome to Mantra.ai!',
         content:
-          'Welcome to the Mantra.ai Internship Program. Start with Foundation Track: Python, Data & AI — Week 1 is now available. Pass each weekly assessment (80% minimum) to unlock the next week.',
+          `Welcome to the ${APP_CONFIG.programName}. Start with Foundation Track: Python, Data & AI — Week 1 is now available. Pass each weekly assessment (80% minimum) to unlock the next week.`,
       },
     });
   }
@@ -37,7 +37,7 @@ async function main() {
       data: {
         title: 'Welcome to Mantra.ai!',
         content:
-          'Welcome to the Mantra.ai Internship Program. Start with Foundation Track: Python, Data & AI — Week 1 is now available. Pass each weekly assessment (80% minimum) to unlock the next week.',
+          `Welcome to the ${APP_CONFIG.programName}. Start with Foundation Track: Python, Data & AI — Week 1 is now available. Pass each weekly assessment (80% minimum) to unlock the next week.`,
         isActive: true,
       },
     });

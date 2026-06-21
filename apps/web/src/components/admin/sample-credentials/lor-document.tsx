@@ -1,4 +1,7 @@
 import { SampleCredentialFrame, SignatureBlock, CERT_SIGNATORY } from './sample-credential-frame';
+import { BRAND } from '@/lib/branding';
+
+const PROGRAM = BRAND.programName;
 
 const SAMPLE = {
   studentName: 'Priya Sharma',
@@ -17,7 +20,7 @@ const BODY_HTML = `
     <p>
       I am pleased to recommend <strong>${SAMPLE.studentName}</strong>, a student at
       <strong>${SAMPLE.college}</strong>, who completed the
-      <strong>Mantra.ai Internship Program</strong> — <em>${SAMPLE.track}</em> track —
+      <strong>${PROGRAM}</strong> — <em>${SAMPLE.track}</em> track —
       under our structured curriculum.
     </p>
     <p>
@@ -46,7 +49,7 @@ export function LetterOfRecommendationSample() {
   return (
     <SampleCredentialFrame
       title="Letter of Recommendation"
-      subtitle="Mantra.ai Internship Program · Merit-Based Recognition"
+      subtitle={`${PROGRAM} · Merit-Based Recognition`}
       meta={{ credentialId: SAMPLE.credentialId, issueDate: SAMPLE.issueDate }}
       variant="letter"
       bodyHtmlForDownload={BODY_HTML}
@@ -56,7 +59,7 @@ export function LetterOfRecommendationSample() {
         <p>
           I am pleased to recommend <strong>{SAMPLE.studentName}</strong>, a student at{' '}
           <strong>{SAMPLE.college}</strong>, who completed the{' '}
-          <strong>Mantra.ai Internship Program</strong> —{' '}
+          <strong>{PROGRAM}</strong> —{' '}
           <em>{SAMPLE.track}</em> track — under our structured curriculum.
         </p>
         <p>
@@ -83,7 +86,7 @@ export function LetterOfRecommendationSample() {
 
       <div className="mt-10">
         <SignatureBlock name={CERT_SIGNATORY.name} title={CERT_SIGNATORY.title} />
-        <p className="text-xs text-slate-500 text-center mt-4">Mantra.ai Internship Program</p>
+        <p className="text-xs text-slate-500 text-center mt-4">{PROGRAM}</p>
       </div>
     </SampleCredentialFrame>
   );

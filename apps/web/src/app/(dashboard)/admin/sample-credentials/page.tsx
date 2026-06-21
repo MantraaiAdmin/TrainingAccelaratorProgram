@@ -8,6 +8,7 @@ import { LetterOfRecommendationSample } from '@/components/admin/sample-credenti
 import { HackathonCompletionSample } from '@/components/admin/sample-credentials/hackathon-completion';
 import { PaidInternshipCompletionSample } from '@/components/admin/sample-credentials/paid-internship-completion';
 import { cn } from '@/lib/utils';
+import { BRAND } from '@/lib/branding';
 
 const TABS = [
   {
@@ -90,7 +91,7 @@ export default function AdminSampleCredentialsPage() {
       </Card>
 
       <p className="text-xs text-muted-foreground text-center">
-        Sample data: Priya Sharma · SRM Institute · Mantra.ai Internship Program
+        Sample data: Priya Sharma · SRM Institute · {BRAND.programName}
       </p>
     </div>
   );

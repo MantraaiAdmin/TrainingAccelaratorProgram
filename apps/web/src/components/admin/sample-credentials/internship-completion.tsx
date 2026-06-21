@@ -6,7 +6,7 @@ const SAMPLE = {
   department: 'Computer Science & Engineering',
   year: '3rd Year',
   track: 'Foundation Track: Python, Data & AI',
-  duration: '10 Weeks (Mantra.ai Internship Program)',
+  duration: '10 Weeks (Mantra AI Talent Accelerator Internship Program)',
   issueDate: '14 June 2026',
   credentialId: 'MAN-INT-COMP-2026-SAMPLE',
 };
