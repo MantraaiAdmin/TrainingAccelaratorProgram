@@ -4,9 +4,9 @@ import Image from 'next/image';
 import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { motion } from 'framer-motion';
-import { useAuthStore } from '@/lib/store';
+import { useAuthStore, useAuthReady } from '@/lib/store';
 import { api } from '@/lib/api';
-import { establishServerSession } from '@/lib/auth-session';
+import { hasClientSession, readPersistedAuthState } from '@/lib/auth-client';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
@@ -16,7 +16,8 @@ import { BRAND } from '@/lib/branding';
 
 export default function LoginPage() {
   const router = useRouter();
-  const { setAuth } = useAuthStore();
+  const authReady = useAuthReady();
+  const { setAuth, user } = useAuthStore();
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [showPassword, setShowPassword] = useState(false);
@@ -24,9 +25,12 @@ export default function LoginPage() {
 
   useEffect(() => {
     api.warmUp();
-    router.prefetch('/dashboard');
-    router.prefetch('/admin');
-  }, [router]);
+    if (!authReady) return;
+    if (!hasClientSession()) return;
+    const role =
+      user?.role || (readPersistedAuthState()?.user?.role as string | undefined);
+    router.replace(role === 'ADMIN' || role === 'SUPER_ADMIN' ? '/admin' : '/dashboard');
+  }, [authReady, router, user?.role]);
 
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -34,11 +38,12 @@ export default function LoginPage() {
     try {
       const result = await api.login(email, password);
       setAuth(result.user as never, result.accessToken, result.refreshToken);
-      await establishServerSession();
-      const user = result.user as { role: string };
-      const destination =
-        user.role === 'ADMIN' || user.role === 'SUPER_ADMIN' ? '/admin' : '/dashboard';
-      window.location.assign(destination);
+      const loggedInUser = result.user as { role: string };
+      router.replace(
+        loggedInUser.role === 'ADMIN' || loggedInUser.role === 'SUPER_ADMIN'
+          ? '/admin'
+          : '/dashboard',
+      );
       return;
     } catch (err) {
       const message = (err as Error).message || 'Login failed';

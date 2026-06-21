@@ -1,7 +1,7 @@
 import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
 import { useEffect, useState } from 'react';
-import { clearServerSession, establishServerSession } from '@/lib/auth-session';
+import { clearServerSession } from '@/lib/auth-session';
 
 interface User {
   id: string;
@@ -89,10 +89,15 @@ export const useAuthStore = create<AuthState>()(
     }),
     {
       name: 'constel-auth',
+      partialize: (state) => ({
+        user: state.user,
+        accessToken: state.accessToken,
+        refreshToken: state.refreshToken,
+        isAuthenticated: state.isAuthenticated,
+      }),
       onRehydrateStorage: () => (state) => {
         if (state?.isAuthenticated && state.accessToken) {
           setAuthCookie();
-          void establishServerSession().catch(() => {});
         }
       },
     },

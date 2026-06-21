@@ -64,7 +64,11 @@ class ApiClient {
       if (typeof window !== 'undefined') {
         localStorage.removeItem('accessToken');
         localStorage.removeItem('refreshToken');
-        window.location.href = '/login';
+        localStorage.removeItem('constel-auth');
+        document.cookie = 'mantra-auth=; path=/; max-age=0; SameSite=Lax';
+        if (!window.location.pathname.startsWith('/login')) {
+          window.location.href = '/login';
+        }
       }
       throw new Error('Unauthorized');
     }
@@ -102,14 +106,35 @@ class ApiClient {
     void fetch(`${this.baseUrl}/api/v1/health`, { method: 'GET', cache: 'no-store' }).catch(() => {});
   }
 
-  // Auth
-  login(email: string, password: string) {
-    return this.fetch<{ user: unknown; accessToken: string; refreshToken: string }>('/auth/login', {
-      method: 'POST',
-      body: JSON.stringify({ email, password }),
-      token: '',
-      skipAuthRetry: true,
-    });
+  // Auth — same-origin route sets httpOnly session cookie on successful login.
+  async login(email: string, password: string) {
+    const controller = typeof AbortController !== 'undefined' ? new AbortController() : null;
+    const timeoutId = controller ? setTimeout(() => controller.abort(), 20000) : null;
+    let response: Response;
+    try {
+      response = await fetch(`${this.baseUrl}/api/auth/login`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email, password }),
+        credentials: 'same-origin',
+        signal: controller?.signal,
+      });
+    } catch (err) {
+      if (timeoutId) clearTimeout(timeoutId);
+      const message = (err as Error).message || '';
+      if (message.includes('aborted') || err instanceof TypeError) {
+        throw new Error('Unable to sign in right now. Please try again.');
+      }
+      throw err;
+    }
+    if (timeoutId) clearTimeout(timeoutId);
+
+    if (!response.ok) {
+      const error = await response.json().catch(() => ({ message: 'Login failed' }));
+      throw new Error(error.message || `HTTP ${response.status}`);
+    }
+
+    return response.json() as Promise<{ user: unknown; accessToken: string; refreshToken: string }>;
   }
 
   // Tracks

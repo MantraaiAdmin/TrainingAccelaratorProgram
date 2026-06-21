@@ -2,25 +2,18 @@
 
 import { useEffect } from 'react';
 import { useRouter, usePathname } from 'next/navigation';
-import { useAuthReady, useAuthStore } from '@/lib/store';
 import { Sidebar, useSidebarOffsetClass } from '@/components/layout/sidebar';
 import { AIPanel } from '@/components/ai/ai-panel';
 import { cn } from '@/lib/utils';
+import { useRequireAuth } from '@/hooks/use-require-auth';
 
 export default function DashboardLayout({ children }: { children: React.ReactNode }) {
-  const authReady = useAuthReady();
-  const { isAuthenticated } = useAuthStore();
-  const router = useRouter();
   const pathname = usePathname();
   const isLearnPage = pathname?.startsWith('/learn/');
   const sidebarOffset = useSidebarOffsetClass();
+  const { authReady, authed } = useRequireAuth();
 
-  useEffect(() => {
-    if (!authReady) return;
-    if (!isAuthenticated) router.replace('/login');
-  }, [authReady, isAuthenticated, router]);
-
-  if (!authReady || !isAuthenticated) return null;
+  if (!authReady || !authed) return null;
 
   return (
     <div className="min-h-screen bg-background">
