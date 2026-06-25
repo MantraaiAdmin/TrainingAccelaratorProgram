@@ -5,7 +5,8 @@ const LEARN_URL = (process.env.NEXT_PUBLIC_APP_URL || 'https://learn.mantraai.cl
 );
 
 const nextConfig = {
-  output: 'standalone',
+  // Standalone is for Docker self-hosting; Vercel uses its own Next.js output.
+  ...(process.env.VERCEL ? {} : { output: 'standalone' }),
   transpilePackages: ['@constel/types', '@constel/config'],
   devIndicators: false,
   images: {
