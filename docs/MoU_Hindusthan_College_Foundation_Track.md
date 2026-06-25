@@ -43,7 +43,8 @@ For the purposes of this MoU:
 | **Track** | Foundation Track: Python, Data & AI (slug: `python-engineering-foundations`) |
 | **Student** | A bonafide student of the College enrolled in an eligible program (2nd–4th year CSE, IT, ECE, AI/ML, MCA, or as mutually agreed) |
 | **Enrollment** | Registration and payment (or institutional billing confirmation) of a Student for the Track on the platform |
-| **Course Fee** | ₹3,999 (Indian Rupees Three Thousand Nine Hundred Ninety-Nine only) per Student per Track enrollment |
+| **Standard Course Fee** | ₹3,999 (Indian Rupees Three Thousand Nine Hundred Ninety-Nine only) per Student per Track enrollment |
+| **Partner Course Fee** | ₹3,599 (Indian Rupees Three Thousand Five Hundred Ninety-Nine only) per Student — 10% partnership discount from the Standard Course Fee |
 | **Platform** | The Mantra.ai web application, admin portal, and associated learning infrastructure |
 | **Certificate** | QR-verified digital completion certificate issued upon successful program completion |
 | **TPO** | Training & Placement Officer or designated internship coordinator of the College |
@@ -61,6 +62,8 @@ For the purposes of this MoU:
 **“Hindusthan College of Engineering and Technology × Mantra.ai Industry Internship Lab”**
 
 3.4 This MoU is non-exclusive. Either Party may engage with other institutions or service providers, subject to confidentiality and data-protection obligations herein.
+
+3.5 **Future collaboration (non-binding).** The College has suggested exploring an on-campus **Incubation Center** in partnership with Mantra.ai. Mantra.ai intends to evaluate and plan such an initiative from **October 2026**, building on outcomes from this Internship Program. Any Incubation Center arrangement shall be subject to a **separate written agreement** and is **not covered** by the financial or operational terms of this MoU.
 
 ---
 
@@ -145,8 +148,6 @@ Upon completion, Students should be able to demonstrate:
 
 (k) Organize or facilitate the Mantra.ai Hackathon for partner colleges at program end
 
-(l) Process college revenue share payments as per Clause 6
-
 ### 5.2 The College Shall:
 
 (a) Nominate a **TPO champion** and **one faculty liaison** as points of contact
@@ -179,48 +180,43 @@ Upon completion, Students should be able to demonstrate:
 
 ## 6. FINANCIAL TERMS
 
-### 6.1 Course Fee
+### 6.1 Standard and Partner Course Fee
 
-The **Course Fee** for the Foundation Track: Python, Data & AI is fixed at:
+The **Standard Course Fee** for the Foundation Track: Python, Data & AI is:
 
 **₹3,999 (Rupees Three Thousand Nine Hundred Ninety-Nine only) per Student per enrollment.**
 
-This fee applies for the agreed cohort under this MoU regardless of student year (2nd/3rd/4th), unless otherwise amended in writing by both Parties.
+For Students enrolled under this MoU with the College, Mantra.ai offers a **partnership discount of 10%**, resulting in a **Partner Course Fee** of:
+
+**₹3,599 (Rupees Three Thousand Five Hundred Ninety-Nine only) per Student per enrollment.**
+
+This Partner Course Fee applies for the agreed cohort under this MoU regardless of student year (2nd/3rd/4th), unless otherwise amended in writing by both Parties.
+
+There is **no revenue share or commission payable to the College** under this MoU. The Partner Course Fee is a direct program fee paid by Students (or collected institutionally as agreed).
 
 ### 6.2 Inclusions
 
-The Course Fee includes all items listed in Clause 4.3. No additional Platform access fee applies for lifetime Track access.
+The Partner Course Fee includes all items listed in Clause 4.3. No additional Platform access fee applies for lifetime Track access.
 
-### 6.3 College Revenue Share
-
-Mantra.ai shall pay the College a **revenue share of 30%** of the Course Fee collected per successful Enrollment attributed to the College.
-
-| Component | Amount (per enrollment at ₹3,999) |
-|-----------|-----------------------------------|
-| College revenue share (30%) | ₹1,200 (rounded) |
-| Mantra.ai retained (70%) | ₹2,799 (rounded) |
-
-*Internal allocation of Mantra.ai's share (sales, mentor, operations) is Mantra.ai's responsibility and does not affect the College's 30% share.*
-
-### 6.4 Payment Flow
+### 6.3 Payment Flow
 
 **Option A — Student Direct Payment (default):**
 
-Students pay Mantra.ai (or Mantra.ai's payment gateway) directly. College revenue share is settled monthly within **15 business days** after month-end, based on confirmed enrollments in the admin dashboard.
+Students pay Mantra.ai (or Mantra.ai's payment gateway) directly at the Partner Course Fee of **₹3,599** per enrollment.
 
 **Option B — Institutional Billing (if mutually agreed):**
 
-The College collects fees from Students and remits Mantra.ai's share (70% of gross) within **15 business days** of collection. College retains its 30% share.
+The College collects the Partner Course Fee from Students and remits the full collected amount to Mantra.ai within **15 business days** of collection.
 
 The Parties shall confirm Option A or B in the Implementation Schedule (Annexure A).
 
-### 6.5 Taxes
+### 6.4 Taxes
 
-All amounts are exclusive of applicable GST. GST shall be charged and handled as per prevailing Indian tax law. Revenue share is calculated on the Course Fee received (net of refunds, if any).
+All amounts are exclusive of applicable GST. GST shall be charged and handled as per prevailing Indian tax law.
 
-### 6.6 Refunds
+### 6.5 Refunds
 
-Refund policy: Refund requests within **7 days** of enrollment and before completion of Week 1 content may be considered on a case-by-case basis. Upon refund, no revenue share applies to that enrollment. Post Week 1, fees are non-refundable except in cases of Platform failure attributable to Mantra.ai.
+Refund policy: Refund requests within **7 days** of enrollment and before completion of Week 1 content may be considered on a case-by-case basis. Post Week 1, fees are non-refundable except in cases of Platform failure attributable to Mantra.ai.
 
 ---
 
@@ -228,7 +224,7 @@ Refund policy: Refund requests within **7 days** of enrollment and before comple
 
 | Phase | Duration | Activities |
 |-------|----------|------------|
-| **Phase 1 — MoU & Setup** | Week 1 | Sign MoU, configure College in admin, confirm commission terms, bulk upload template |
+| **Phase 1 — MoU & Setup** | Week 1 | Sign MoU, configure College in admin, confirm Partner Course Fee, bulk upload template |
 | **Phase 2 — Orientation** | Week 1–2 | Admin training, faculty orientation, student kickoff webinar |
 | **Phase 3 — Program Delivery** | Weeks 1–10 | Weekly modules, live sessions, quizzes, labs, capstone |
 | **Phase 4 — Completion** | End of Week 10 | Analytics review, certificates, hackathon, placement prep support |
@@ -275,7 +271,7 @@ Target program start date: ______________ 2026 (to be confirmed in Annexure A).
 
 11.2 Either Party may terminate with **30 days** written notice if the other Party materially breaches this MoU and fails to cure within 15 days of notice.
 
-11.3 Upon termination: (a) enrolled Students retain lifetime access to content already provisioned; (b) outstanding revenue share shall be settled within 30 days; (c) each Party returns or destroys confidential information.
+11.3 Upon termination: (a) enrolled Students retain lifetime access to content already provisioned; (b) any outstanding fee settlements shall be completed within 30 days; (c) each Party returns or destroys confidential information.
 
 ---
 
@@ -372,7 +368,8 @@ Target program start date: ______________ 2026 (to be confirmed in Annexure A).
 | Item | Details |
 |------|---------|
 | Track | Foundation Track: Python, Data & AI |
-| Course Fee | ₹3,999 per Student |
+| Standard Course Fee | ₹3,999 per Student |
+| Partner Course Fee (10% discount) | ₹3,599 per Student |
 | Target cohort size | __________ Students (minimum recommended: 30; pilot: 50) |
 | Departments | __________ (e.g., CSE, IT, AI/ML) |
 | Student years | __________ (2nd / 3rd / 4th year) |

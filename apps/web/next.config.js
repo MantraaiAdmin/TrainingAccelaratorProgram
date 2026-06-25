@@ -1,4 +1,9 @@
 /** @type {import('next').NextConfig} */
+const LEARN_URL = (process.env.NEXT_PUBLIC_APP_URL || 'https://learn.mantraai.cloud').replace(
+  /\/$/,
+  '',
+);
+
 const nextConfig = {
   output: 'standalone',
   transpilePackages: ['@constel/types', '@constel/config'],
@@ -7,20 +12,20 @@ const nextConfig = {
     remotePatterns: [{ protocol: 'https', hostname: '**' }],
   },
   async redirects() {
-    return [
-      {
-        source: '/:path*',
-        has: [{ type: 'host', value: 'learn.mantraai.cloud' }],
-        destination: 'https://mantraai.cloud/:path*',
-        permanent: false,
-      },
-      {
-        source: '/:path*',
-        has: [{ type: 'host', value: 'learn.mantra.ai' }],
-        destination: 'https://mantraai.cloud/:path*',
-        permanent: false,
-      },
+    // Apex + legacy hosts → canonical student subdomain (learn.mantraai.cloud)
+    const legacyHosts = [
+      'mantraai.cloud',
+      'www.mantraai.cloud',
+      'training-accelerator-program-api.vercel.app',
+      'training-accelarator-program-api.vercel.app',
     ];
+
+    return legacyHosts.map((host) => ({
+      source: '/:path*',
+      has: [{ type: 'host', value: host }],
+      destination: `${LEARN_URL}/:path*`,
+      permanent: true,
+    }));
   },
   async rewrites() {
     const apiUrl = (

@@ -108,7 +108,8 @@ def build() -> None:
     rows_data = [
         ("Program", "Mantra AI Talent Accelerator via Mantra.ai"),
         ("Track", "Foundation Track: Python, Data & AI"),
-        ("Course Fee", "₹3,999 per Student per enrollment"),
+        ("Standard Course Fee", "₹3,999 per Student per enrollment"),
+        ("Partner Course Fee", "₹3,599 per Student (10% partnership discount)"),
         ("Student", "Bonafide 2nd–4th year student (CSE, IT, ECE, AI/ML, MCA or as agreed)"),
         ("Platform", "Mantra.ai web app and admin portal"),
     ]
@@ -122,6 +123,13 @@ def build() -> None:
     add_bullet(
         doc,
         "Joint branding: “Hindusthan College of Engineering and Technology × Mantra.ai Industry Internship Lab”",
+    )
+    add_bullet(
+        doc,
+        "Future collaboration (non-binding): The College has suggested an on-campus Incubation Center "
+        "partnership. Mantra.ai intends to evaluate and plan such an initiative from October 2026, "
+        "building on this Internship Program. Any Incubation Center arrangement shall be subject to a "
+        "separate written agreement and is not covered by this MoU.",
     )
 
     add_heading(doc, "4. PROGRAM — FOUNDATION TRACK: PYTHON, DATA & AI", 2)
@@ -156,7 +164,6 @@ def build() -> None:
         "Weekly live sessions + recordings",
         "Admin training, bulk upload template, kickoff webinar",
         "Analytics, certificates, hackathon facilitation",
-        "Revenue share settlement per Clause 6",
     ]:
         add_bullet(doc, item)
 
@@ -192,23 +199,32 @@ def build() -> None:
     )
 
     add_heading(doc, "6. FINANCIAL TERMS", 2)
-    add_para(doc, "Course Fee: ₹3,999 per Student (all-inclusive as per Section 4).", bold=True)
-    add_para(doc, "College Revenue Share: 30% of Course Fee per confirmed enrollment.", bold=True)
+    add_para(
+        doc,
+        "Standard Course Fee: ₹3,999 per Student. Partner Course Fee: ₹3,599 per Student "
+        "(10% partnership discount for College-attributed enrollments).",
+        bold=True,
+    )
+    add_para(
+        doc,
+        "There is no revenue share or commission payable to the College under this MoU.",
+        bold=True,
+    )
 
     fin_table = doc.add_table(rows=3, cols=2)
     fin_table.style = "Table Grid"
-    fin_table.rows[0].cells[0].text = "Component"
+    fin_table.rows[0].cells[0].text = "Fee type"
     fin_table.rows[0].cells[1].text = "Amount (per enrollment)"
-    fin_table.rows[1].cells[0].text = "College share (30%)"
-    fin_table.rows[1].cells[1].text = "₹1,200"
-    fin_table.rows[2].cells[0].text = "Mantra.ai share (70%)"
-    fin_table.rows[2].cells[1].text = "₹2,799"
+    fin_table.rows[1].cells[0].text = "Standard Course Fee"
+    fin_table.rows[1].cells[1].text = "₹3,999"
+    fin_table.rows[2].cells[0].text = "Partner Course Fee (10% discount)"
+    fin_table.rows[2].cells[1].text = "₹3,599"
 
     doc.add_paragraph()
     add_para(
         doc,
-        "Payment: Students pay Mantra.ai directly (Option A) OR College collects and remits (Option B). "
-        "Settlement within 15 business days after month-end. GST as per law. "
+        "Payment: Students pay Mantra.ai directly at ₹3,599 (Option A) OR College collects and remits "
+        "the full Partner Course Fee to Mantra.ai within 15 business days (Option B). GST as per law. "
         "Refund within 7 days pre-Week 1 on case-by-case basis.",
     )
 
@@ -270,7 +286,8 @@ def build() -> None:
     annex.style = "Table Grid"
     annex_data = [
         ("Track", "Foundation Track: Python, Data & AI"),
-        ("Course Fee", "₹3,999 per Student"),
+        ("Standard Course Fee", "₹3,999 per Student"),
+        ("Partner Course Fee (10% discount)", "₹3,599 per Student"),
         ("Cohort size", "__________ Students"),
         ("Departments", "__________"),
         ("Start date", "__________"),

@@ -1,3 +1,4 @@
+import { APP_URL } from '@/lib/app-url';
 import { BRAND } from '@/lib/branding';
 
 export const CERT_SIGNATORY = {
@@ -33,7 +34,7 @@ export async function fetchLogoDataUrl(): Promise<string> {
       reader.readAsDataURL(blob);
     });
   } catch {
-    return 'https://mantraai.cloud/mantra-ai-icon.png';
+    return `${APP_URL}/mantra-ai-icon.png`;
   }
 }
 
