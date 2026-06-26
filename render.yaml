@@ -23,6 +23,10 @@ services:
         value: https://learn.mantraai.cloud,https://mantraai.cloud,https://learn.mantra.ai,https://training-accelerator-program-api.vercel.app,https://training-accelarator-program-api.vercel.app
       - key: USE_DOCKER_SANDBOX
         value: 'false'
+      - key: ALLOW_LOCAL_CODE_EXECUTION
+        value: 'true'
+      - key: ALLOW_PUBLIC_REGISTRATION
+        value: 'false'
       - key: AI_PROVIDER
         value: qwen
       - key: QWEN_BASE_URL

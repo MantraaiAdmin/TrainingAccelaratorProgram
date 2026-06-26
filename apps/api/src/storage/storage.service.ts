@@ -2,6 +2,22 @@ import { Injectable } from '@nestjs/common';
 import * as fs from 'fs/promises';
 import * as path from 'path';
 
+function sanitizeStorageSegment(value: string): string {
+  const normalized = value.replace(/\\/g, '/').replace(/^\/+|\/+$/g, '');
+  if (!normalized || normalized.includes('..') || normalized.includes('\0')) {
+    throw new Error('Invalid storage path segment');
+  }
+  return normalized;
+}
+
+function sanitizeFilename(filename: string): string {
+  const base = path.basename(filename).replace(/[^\w.\-()+ ]/g, '_');
+  if (!base || base === '.' || base === '..') {
+    throw new Error('Invalid filename');
+  }
+  return base;
+}
+
 export interface StorageProvider {
   upload(file: Buffer, filename: string, folder?: string): Promise<string>;
   delete(fileUrl: string): Promise<void>;
@@ -17,20 +33,31 @@ class LocalStorageProvider implements StorageProvider {
   }
 
   async upload(file: Buffer, filename: string, folder = 'general'): Promise<string> {
-    const dir = path.join(this.basePath, folder);
+    const safeFolder = sanitizeStorageSegment(folder);
+    const safeFilename = sanitizeFilename(filename);
+    const dir = path.join(this.basePath, safeFolder);
     await fs.mkdir(dir, { recursive: true });
-    const filepath = path.join(dir, filename);
+    const filepath = path.join(dir, safeFilename);
+    if (!filepath.startsWith(path.resolve(dir))) {
+      throw new Error('Invalid upload path');
+    }
     await fs.writeFile(filepath, file);
-    return `/uploads/${folder}/${filename}`;
+    return `/uploads/${safeFolder}/${safeFilename}`;
   }
 
   async delete(fileUrl: string): Promise<void> {
-    const filepath = path.join(this.basePath, fileUrl.replace('/uploads/', ''));
+    const relative = fileUrl.replace(/^\/uploads\//, '');
+    const safeRelative = sanitizeStorageSegment(relative);
+    const filepath = path.resolve(this.basePath, safeRelative);
+    if (!filepath.startsWith(path.resolve(this.basePath))) {
+      throw new Error('Invalid delete path');
+    }
     await fs.unlink(filepath).catch(() => {});
   }
 
   getUrl(key: string): string {
-    return `/uploads/${key}`;
+    const safeKey = sanitizeStorageSegment(key);
+    return `/uploads/${safeKey}`;
   }
 }
 

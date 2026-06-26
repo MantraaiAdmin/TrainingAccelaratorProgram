@@ -1,6 +1,6 @@
 import { Controller, Post, Body, Param, UseGuards, Request } from '@nestjs/common';
 import { ApiTags, ApiOperation, ApiBearerAuth } from '@nestjs/swagger';
-import { IsString } from 'class-validator';
+import { IsString, IsOptional } from 'class-validator';
 import { ApiProperty } from '@nestjs/swagger';
 import { CodeExecutionService } from './code-execution.service';
 import { PrismaService } from '../prisma/prisma.service';
@@ -12,6 +12,7 @@ class RunCodeDto {
   code: string;
 
   @ApiProperty({ required: false })
+  @IsOptional()
   @IsString()
   input?: string;
 }

@@ -1,10 +1,12 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, ServiceUnavailableException } from '@nestjs/common';
 import { exec } from 'child_process';
 import { promisify } from 'util';
 import * as fs from 'fs/promises';
 import * as path from 'path';
 import * as os from 'os';
 import { v4 as uuidv4 } from 'uuid';
+import { assertSafePythonCode } from './code-safety';
+import { isCodeExecutionAllowed } from '../common/security.config';
 
 const execAsync = promisify(exec);
 
@@ -36,6 +38,7 @@ export class CodeExecutionService {
   private useDocker = process.env.USE_DOCKER_SANDBOX === 'true';
 
   async runCode(code: string, input?: string): Promise<ExecutionResult> {
+    this.ensureExecutionAllowed(code);
     const start = Date.now();
     try {
       const output = await this.executePython(code, input);
@@ -59,6 +62,7 @@ export class CodeExecutionService {
     testCases: TestCase[],
     hiddenOnly = false,
   ): Promise<ExecutionResult> {
+    this.ensureExecutionAllowed(code);
     const start = Date.now();
     const cases = hiddenOnly ? testCases.filter((t) => t.isHidden) : testCases;
     const results = [];
@@ -95,6 +99,15 @@ export class CodeExecutionService {
       total: cases.length,
       executionTimeMs: Date.now() - start,
     };
+  }
+
+  private ensureExecutionAllowed(code: string): void {
+    if (!isCodeExecutionAllowed()) {
+      throw new ServiceUnavailableException(
+        'Code execution is disabled until a sandbox is configured (USE_DOCKER_SANDBOX=true)',
+      );
+    }
+    assertSafePythonCode(code);
   }
 
   private async executePython(code: string, input?: string): Promise<string> {

@@ -1,5 +1,6 @@
 import {
   Controller, Get, Post, Put, Delete, Body, Param, Query, UseGuards, Request, UseInterceptors, UploadedFile,
+  BadRequestException,
 } from '@nestjs/common';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { ApiTags, ApiBearerAuth, ApiConsumes } from '@nestjs/swagger';
@@ -84,9 +85,24 @@ export class AdminController {
   }
 
   @Post('students/bulk-upload')
-  @UseInterceptors(FileInterceptor('file'))
+  @UseInterceptors(
+    FileInterceptor('file', {
+      limits: { fileSize: 5 * 1024 * 1024 },
+      fileFilter: (_req, file, cb) => {
+        const allowed =
+          file.mimetype === 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' ||
+          file.mimetype === 'application/vnd.ms-excel' ||
+          file.originalname.endsWith('.xlsx') ||
+          file.originalname.endsWith('.xls');
+        cb(null, allowed);
+      },
+    }),
+  )
   @ApiConsumes('multipart/form-data')
   bulkUpload(@UploadedFile() file: Express.Multer.File) {
+    if (!file?.buffer?.length) {
+      throw new BadRequestException('Valid Excel file required (.xlsx or .xls, max 5MB)');
+    }
     return this.adminService.bulkUploadStudents(file.buffer);
   }
 

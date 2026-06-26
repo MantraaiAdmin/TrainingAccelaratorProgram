@@ -1,11 +1,14 @@
-import { Controller, Post, Body, UseGuards, Get, Request } from '@nestjs/common';
+import { Controller, Post, Body, UseGuards, Get, Request, ForbiddenException } from '@nestjs/common';
 import { ApiTags, ApiOperation, ApiBearerAuth } from '@nestjs/swagger';
+import { Throttle } from '@nestjs/throttler';
 import { AuthService } from './auth.service';
 import { LoginDto, RegisterDto, ForgotPasswordDto, ResetPasswordDto, RefreshTokenDto } from './dto/auth.dto';
 import { JwtAuthGuard } from './guards/roles.guard';
+import { isPublicRegistrationAllowed } from '../common/security.config';
 
 @ApiTags('Auth')
 @Controller('auth')
+@Throttle({ default: { limit: 10, ttl: 60000 } })
 export class AuthController {
   constructor(private authService: AuthService) {}
 
@@ -18,6 +21,9 @@ export class AuthController {
   @Post('register')
   @ApiOperation({ summary: 'Register new user' })
   register(@Body() dto: RegisterDto) {
+    if (process.env.NODE_ENV === 'production' && !isPublicRegistrationAllowed()) {
+      throw new ForbiddenException('Self-service registration is disabled');
+    }
     return this.authService.register(dto);
   }
 

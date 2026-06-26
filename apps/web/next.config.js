@@ -1,5 +1,5 @@
 /** @type {import('next').NextConfig} */
-const LEARN_URL = (process.env.NEXT_PUBLIC_APP_URL || 'https://learn.mantraai.cloud').replace(
+const APP_URL = (process.env.NEXT_PUBLIC_APP_URL || 'https://learn.mantraai.cloud').replace(
   /\/$/,
   '',
 );
@@ -10,10 +10,15 @@ const nextConfig = {
   transpilePackages: ['@constel/types', '@constel/config'],
   devIndicators: false,
   images: {
-    remotePatterns: [{ protocol: 'https', hostname: '**' }],
+    remotePatterns: [
+      { protocol: 'https', hostname: 'learn.mantraai.cloud' },
+      { protocol: 'https', hostname: 'mantraai.cloud' },
+      { protocol: 'https', hostname: '**.mantra.ai' },
+      { protocol: 'https', hostname: 'avatars.githubusercontent.com' },
+    ],
   },
   async redirects() {
-    // Apex + legacy hosts → canonical student subdomain (learn.mantraai.cloud)
+    // Legacy / alternate hosts → canonical student platform (learn.mantraai.cloud)
     const legacyHosts = [
       'mantraai.cloud',
       'www.mantraai.cloud',
@@ -24,7 +29,7 @@ const nextConfig = {
     return legacyHosts.map((host) => ({
       source: '/:path*',
       has: [{ type: 'host', value: host }],
-      destination: `${LEARN_URL}/:path*`,
+      destination: `${APP_URL}/:path*`,
       permanent: true,
     }));
   },
@@ -52,6 +57,11 @@ const nextConfig = {
           { key: 'Referrer-Policy', value: 'strict-origin-when-cross-origin' },
           { key: 'Strict-Transport-Security', value: 'max-age=63072000; includeSubDomains; preload' },
           { key: 'Permissions-Policy', value: 'camera=(), microphone=(), geolocation=()' },
+          {
+            key: 'Content-Security-Policy',
+            value:
+              "default-src 'self'; script-src 'self' 'unsafe-inline' 'unsafe-eval'; style-src 'self' 'unsafe-inline'; img-src 'self' data: https: blob:; font-src 'self' data:; connect-src 'self' https://mantra-learn-api.onrender.com https://learn.mantraai.cloud https://*.mantra.ai; frame-ancestors 'none'; base-uri 'self'; form-action 'self'",
+          },
         ],
       },
     ];

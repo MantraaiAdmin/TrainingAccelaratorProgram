@@ -43,7 +43,6 @@ export class AuthService {
     password: string;
     firstName: string;
     lastName: string;
-    role?: UserRole;
   }) {
     const existing = await this.prisma.user.findUnique({ where: { email: data.email } });
     if (existing) throw new UnauthorizedException('Email already registered');
@@ -55,7 +54,7 @@ export class AuthService {
         passwordHash,
         firstName: data.firstName,
         lastName: data.lastName,
-        role: data.role || UserRole.STUDENT,
+        role: UserRole.STUDENT,
       },
     });
 
@@ -90,8 +89,9 @@ export class AuthService {
       },
     });
 
-    // In production, send email via SMTP
-    console.log(`[DEV] Password reset OTP for ${email}: ${code}`);
+    if (process.env.NODE_ENV !== 'production') {
+      console.log(`[DEV] Password reset OTP for ${email}: ${code}`);
+    }
     return { message: 'If email exists, OTP has been sent' };
   }
 
