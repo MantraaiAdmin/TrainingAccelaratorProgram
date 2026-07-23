@@ -19,16 +19,31 @@ function cookieOptions() {
 }
 
 export async function POST(request: NextRequest) {
-  const body = await request.json().catch(() => null);
+  let body: { email?: string; password?: string } | null = null;
+  try {
+    body = await request.json();
+  } catch {
+    return NextResponse.json({ message: 'Invalid request body' }, { status: 400 });
+  }
+
   if (!body?.email || !body?.password) {
     return NextResponse.json({ message: 'Email and password required' }, { status: 400 });
   }
 
-  const upstream = await fetch(`${API_URL}/api/v1/auth/login`, {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ email: body.email, password: body.password }),
-  });
+  let upstream: Response;
+  try {
+    upstream = await fetch(`${API_URL}/api/v1/auth/login`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ email: body.email, password: body.password }),
+      signal: AbortSignal.timeout(25_000),
+    });
+  } catch {
+    return NextResponse.json(
+      { message: 'Authentication service is temporarily unavailable. Please try again.' },
+      { status: 503 },
+    );
+  }
 
   const data = await upstream.json().catch(() => ({ message: 'Login failed' }));
   if (!upstream.ok) {
