@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
+import { directLogin } from '@/lib/direct-auth';
 
 const API_URL = (
   process.env.API_URL ||
@@ -18,6 +19,12 @@ function cookieOptions() {
   };
 }
 
+function loginResponse(data: unknown) {
+  const response = NextResponse.json(data);
+  response.cookies.set(AUTH_COOKIE, '1', { ...cookieOptions(), maxAge: MAX_AGE });
+  return response;
+}
+
 export async function POST(request: NextRequest) {
   let body: { email?: string; password?: string } | null = null;
   try {
@@ -28,6 +35,24 @@ export async function POST(request: NextRequest) {
 
   if (!body?.email || !body?.password) {
     return NextResponse.json({ message: 'Email and password required' }, { status: 400 });
+  }
+
+  // Prefer direct DB auth on Vercel when DATABASE_URL + JWT_SECRET are configured.
+  // This keeps login working even if Render API is stale or failing.
+  try {
+    const direct = await directLogin(body.email, body.password);
+    if (direct === 'invalid') {
+      return NextResponse.json({ message: 'Invalid credentials' }, { status: 401 });
+    }
+    if (direct) {
+      return loginResponse(direct);
+    }
+  } catch (error) {
+    console.error('[auth/login] direct DB login failed:', error);
+    return NextResponse.json(
+      { message: 'Authentication database error. Please contact support.' },
+      { status: 503 },
+    );
   }
 
   let upstream: Response;
@@ -50,7 +75,5 @@ export async function POST(request: NextRequest) {
     return NextResponse.json(data, { status: upstream.status });
   }
 
-  const response = NextResponse.json(data);
-  response.cookies.set(AUTH_COOKIE, '1', { ...cookieOptions(), maxAge: MAX_AGE });
-  return response;
+  return loginResponse(data);
 }
