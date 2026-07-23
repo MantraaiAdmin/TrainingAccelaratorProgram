@@ -2,6 +2,9 @@ services:
   - type: web
     name: mantra-learn-api
     runtime: docker
+    repo: https://github.com/MantraaiAdmin/TrainingAccelaratorProgram
+    branch: main
+    autoDeploy: true
     dockerfilePath: ./infra/docker/Dockerfile.api
     dockerContext: .
     plan: standard
